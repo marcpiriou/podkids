@@ -10,6 +10,7 @@ import fr.podkids.app.data.db.EpisodeEntity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -17,7 +18,6 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import kotlin.coroutines.coroutineContext
 
 /**
  * Télécharge le fichier audio d'un épisode dans le stockage privé de l'application.
@@ -102,7 +102,8 @@ class DownloadWorker(
                     var downloaded = alreadyHave
                     var lastProgress = Int.MIN_VALUE
                     while (true) {
-                        coroutineContext.ensureActive()
+                        // currentCoroutineContext() : la propriété coroutineContext du worker est un simple dispatcher.
+                        currentCoroutineContext().ensureActive()
                         val read = input.read(buffer)
                         if (read == -1) break
                         output.write(buffer, 0, read)
