@@ -2,7 +2,7 @@ package fr.podkids.app.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,6 +53,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.podkids.app.R
 import fr.podkids.app.data.settings.DarkMode
@@ -117,16 +118,15 @@ fun SettingsScreen(
             }
 
             SettingCard(icon = Icons.Rounded.Palette, title = stringResource(R.string.setting_color)) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.horizontalScroll(rememberScrollState()),
-                ) {
+                // Les cinq couleurs se partagent la largeur : toutes restent visibles sans défilement.
+                Row(modifier = Modifier.fillMaxWidth()) {
                     ThemeColor.entries.forEach { color ->
                         ColorSwatch(
                             color = color.palette().primary,
                             label = stringResource(color.labelRes()),
                             selected = settings.themeColor == color,
                             onClick = { onThemeColorChange(color) },
+                            modifier = Modifier.weight(1f),
                         )
                     }
                 }
@@ -217,18 +217,24 @@ private fun <T> ChoiceRow(
 }
 
 @Composable
-private fun ColorSwatch(color: Color, label: String, selected: Boolean, onClick: () -> Unit) {
+private fun ColorSwatch(
+    color: Color,
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        modifier = modifier
             .clip(MaterialTheme.shapes.small)
-            .clickable(role = Role.RadioButton, onClick = onClick)
-            .padding(4.dp),
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .padding(vertical = 4.dp),
     ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(56.dp)
+                .size(48.dp)
                 .clip(CircleShape)
                 .background(color)
                 .then(
@@ -240,11 +246,16 @@ private fun ColorSwatch(color: Color, label: String, selected: Boolean, onClick:
                 ),
         ) {
             if (selected) {
-                Icon(Icons.Rounded.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(30.dp))
+                Icon(Icons.Rounded.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(26.dp))
             }
         }
         Spacer(Modifier.height(4.dp))
-        Text(text = label, style = MaterialTheme.typography.bodySmall)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

@@ -95,7 +95,8 @@ fun CatalogScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { showRssDialog = true },
-                icon = { Icon(Icons.Rounded.RssFeed, contentDescription = null) },
+                // Le composant masque son libellé aux lecteurs d'écran : c'est l'icône qui porte la description.
+                icon = { Icon(Icons.Rounded.RssFeed, contentDescription = stringResource(R.string.add_rss)) },
                 text = { Text(stringResource(R.string.add_rss)) },
             )
         },
