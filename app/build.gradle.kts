@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "fr.podkids.app"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "fr.podkids.app"

@@ -49,7 +49,7 @@ app/src/main/java/fr/podkids/app/
 
 ## Compiler
 
-Prérequis : JDK 17 ou plus récent et le SDK Android (plateforme 36). Le plus simple est d'ouvrir le
+Prérequis : JDK 17 ou plus récent et le SDK Android (plateforme 37). Le plus simple est d'ouvrir le
 dossier dans Android Studio.
 
 ```bash
