@@ -9,13 +9,17 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import com.google.common.util.concurrent.ListenableFuture
 import fr.podkids.app.AppContainer
 import fr.podkids.app.MainActivity
 import fr.podkids.app.PodkidsApp
+import fr.podkids.app.data.catalog.CatalogApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -47,7 +51,15 @@ class PlaybackService : MediaSessionService() {
         super.onCreate()
         container = (application as PodkidsApp).container
 
+        // Les adresses audio des podcasts passent souvent par des redirections http <-> https
+        // (mesure d'audience) : elles sont refusées par défaut, on les autorise explicitement.
+        val httpDataSourceFactory = DefaultHttpDataSource.Factory()
+            .setUserAgent(CatalogApi.USER_AGENT)
+            .setAllowCrossProtocolRedirects(true)
+        val dataSourceFactory = DefaultDataSource.Factory(this, httpDataSourceFactory)
+
         player = ExoPlayer.Builder(this)
+            .setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory))
             .setAudioAttributes(
                 AudioAttributes.Builder()
                     .setUsage(C.USAGE_MEDIA)

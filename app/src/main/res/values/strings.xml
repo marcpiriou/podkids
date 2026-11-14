@@ -83,6 +83,7 @@
     <string name="seek_back">Reculer de 10 secondes</string>
     <string name="seek_forward">Avancer de 30 secondes</string>
     <string name="open_player">Ouvrir le lecteur</string>
+    <string name="playback_error">Impossible de lire cet épisode. Vérifie la connexion Internet.</string>
     <string name="queue">File d’attente</string>
     <string name="queue_clear">Vider</string>
     <string name="queue_empty">La file d’attente est vide. Ajoute des épisodes pour les écouter à la suite.</string>

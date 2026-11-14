@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -15,8 +16,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -61,9 +65,18 @@ class PlayerConnection(private val context: Context) {
     private val _progress = MutableStateFlow(PlaybackProgress())
     val progress: StateFlow<PlaybackProgress> = _progress.asStateFlow()
 
+    private val _errors = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    /** Émet quand un épisode ne peut pas être lu (hors connexion, fichier introuvable…). */
+    val errors: SharedFlow<Unit> = _errors.asSharedFlow()
+
     private val listener = object : Player.Listener {
         override fun onEvents(player: Player, events: Player.Events) {
             publishState(player)
+        }
+
+        override fun onPlayerError(error: PlaybackException) {
+            _errors.tryEmit(Unit)
         }
     }
 
