@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Podkids</string>
+
+    <!-- Commun -->
+    <string name="back">Retour</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Annuler</string>
+    <string name="add">Ajouter</string>
+    <string name="remove">Retirer</string>
+    <string name="delete">Supprimer</string>
+    <string name="retry">Réessayer</string>
+    <string name="refresh">Actualiser</string>
+    <string name="settings">Réglages</string>
+
+    <!-- Accueil -->
+    <string name="greeting">Bonjour !</string>
+    <string name="greeting_named">Bonjour %1$s !</string>
+    <string name="catalog">Catalogue</string>
+    <string name="catalog_card_subtitle">Trouve de nouvelles histoires à écouter</string>
+    <string name="now_playing">Lecture en cours</string>
+    <string name="nothing_playing">Rien en lecture pour l’instant</string>
+    <string name="nothing_playing_hint">Choisis un épisode dans le catalogue ou dans tes podcasts pour l’écouter ici.</string>
+    <string name="open_catalog">Ouvrir le catalogue</string>
+    <string name="my_podcasts">Mes podcasts</string>
+    <string name="library_empty">Tu n’as pas encore de podcast. Ouvre le catalogue pour en ajouter !</string>
+    <plurals name="queue_count">
+        <item quantity="one">%1$d épisode à suivre</item>
+        <item quantity="many">%1$d épisodes à suivre</item>
+        <item quantity="other">%1$d épisodes à suivre</item>
+    </plurals>
+
+    <!-- Catalogue -->
+    <string name="search_hint">Chercher un podcast</string>
+    <string name="clear_search">Effacer la recherche</string>
+    <string name="category_top">Les préférés</string>
+    <string name="category_stories">Histoires</string>
+    <string name="category_learning">Apprendre</string>
+    <string name="category_animals">Animaux</string>
+    <string name="catalog_error">Impossible de charger le catalogue. Vérifie la connexion Internet.</string>
+    <string name="catalog_empty">Aucun podcast à afficher pour le moment.</string>
+    <string name="search_no_result">Aucun podcast pour enfants ne correspond à cette recherche.</string>
+    <string name="add_rss">Ajouter un flux RSS</string>
+    <string name="add_rss_explanation">Colle ici l’adresse du flux RSS du podcast à ajouter.</string>
+    <string name="rss_url_label">Adresse du flux RSS</string>
+    <string name="loading_podcast">Chargement du podcast…</string>
+    <string name="open_error_title">Podcast indisponible</string>
+    <string name="open_error_network">Impossible de charger ce podcast. Vérifie la connexion Internet puis réessaie.</string>
+    <string name="open_error_invalid">Cette adresse ne correspond pas à un flux de podcast valide.</string>
+
+    <!-- Podcast -->
+    <plurals name="episode_count">
+        <item quantity="one">%1$d épisode</item>
+        <item quantity="many">%1$d épisodes</item>
+        <item quantity="other">%1$d épisodes</item>
+    </plurals>
+    <string name="add_to_my_podcasts">Ajouter</string>
+    <string name="in_my_podcasts">Ajouté</string>
+    <string name="remove_podcast">Retirer ce podcast</string>
+    <string name="remove_podcast_confirm">Le podcast sera retiré de « Mes podcasts » et ses épisodes téléchargés seront supprimés de l’appareil.</string>
+    <string name="download">Télécharger</string>
+    <string name="download_all">Tout télécharger</string>
+    <plurals name="download_all_confirm">
+        <item quantity="one">Télécharger %1$d épisode pour l’écouter sans connexion ?</item>
+        <item quantity="many">Télécharger %1$d épisodes pour les écouter sans connexion ? Cela peut prendre beaucoup de place sur l’appareil.</item>
+        <item quantity="other">Télécharger %1$d épisodes pour les écouter sans connexion ? Cela peut prendre beaucoup de place sur l’appareil.</item>
+    </plurals>
+    <string name="download_all_nothing">Tous les épisodes sont déjà téléchargés ou en cours de téléchargement.</string>
+    <string name="download_cancel">Annuler le téléchargement</string>
+    <string name="download_retry">Échec du téléchargement, réessayer</string>
+    <string name="delete_download">Supprimer le téléchargement</string>
+    <string name="delete_download_confirm">L’épisode restera écoutable en streaming avec une connexion Internet.</string>
+    <string name="add_to_queue">Ajouter à la file d’attente</string>
+    <string name="added_to_queue">Ajouté à la file d’attente</string>
+    <string name="already_in_queue">Cet épisode est déjà dans la file d’attente</string>
+    <string name="refresh_failed">Impossible d’actualiser ce podcast</string>
+    <string name="episode_listened">Écouté</string>
+
+    <!-- Lecteur -->
+    <string name="play">Lire</string>
+    <string name="pause">Mettre en pause</string>
+    <string name="next_episode">Épisode suivant</string>
+    <string name="seek_back">Reculer de 10 secondes</string>
+    <string name="seek_forward">Avancer de 30 secondes</string>
+    <string name="open_player">Ouvrir le lecteur</string>
+    <string name="queue">File d’attente</string>
+    <string name="queue_clear">Vider</string>
+    <string name="queue_empty">La file d’attente est vide. Ajoute des épisodes pour les écouter à la suite.</string>
+    <string name="queue_move_up">Monter dans la file d’attente</string>
+    <string name="queue_remove">Retirer de la file d’attente</string>
+
+    <!-- Réglages -->
+    <string name="setting_name">Ton prénom</string>
+    <string name="setting_name_hint">Comment t’appelles-tu ?</string>
+    <string name="setting_color">Couleur</string>
+    <string name="color_ocean">Océan</string>
+    <string name="color_forest">Forêt</string>
+    <string name="color_strawberry">Fraise</string>
+    <string name="color_sun">Soleil</string>
+    <string name="color_galaxy">Galaxie</string>
+    <string name="setting_appearance">Apparence</string>
+    <string name="appearance_system">Automatique</string>
+    <string name="appearance_light">Clair</string>
+    <string name="appearance_dark">Sombre</string>
+    <string name="setting_text_size">Taille du texte</string>
+    <string name="text_size_normal">Normale</string>
+    <string name="text_size_large">Grande</string>
+    <string name="text_size_xlarge">Très grande</string>
+    <string name="setting_tile_size">Taille des pochettes</string>
+    <string name="tile_size_small">Petites</string>
+    <string name="tile_size_large">Grandes</string>
+    <string name="about_version">Podkids version %1$s</string>
+</resources>
