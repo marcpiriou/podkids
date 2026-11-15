@@ -16,6 +16,18 @@ android {
         versionName = "1.0.0"
     }
 
+    // Clé de debug versionnée (mot de passe public « android ») : tous les APK de debug, y compris ceux
+    // produits par l'intégration continue, portent la même signature et s'installent donc par-dessus
+    // la version précédente sans désinstallation. Ne jamais l'utiliser pour une publication.
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true

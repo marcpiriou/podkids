@@ -1,5 +1,6 @@
 package fr.podkids.app.ui.catalog
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,7 +27,6 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.AutoStories
 import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material.icons.rounded.Castle
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.RssFeed
 import androidx.compose.material.icons.rounded.Science
@@ -41,6 +42,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -224,33 +226,43 @@ fun CatalogScreen(
     }
 }
 
-/** Sélecteur d'âge à choix multiples : « À partir de » 3, 4, 5, 6 ou 7 ans. Rien de coché = tous les âges. */
+/**
+ * Sélecteur d'âge à choix multiples : « À partir de » 3, 4, 5, 6 ou 7 ans. Rien de coché = tous les âges.
+ * Les cinq choix se partagent la largeur pour rester tous visibles, quelle que soit la taille du texte.
+ */
 @Composable
 private fun AgeSelector(selected: Set<Int>, onToggle: (Int) -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier
-            .horizontalScroll(rememberScrollState())
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp),
-    ) {
+    Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 4.dp)) {
         Text(
             text = stringResource(R.string.age_selector_label),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Catalog.AGE_CHOICES.forEach { age ->
-            val isSelected = age in selected
-            FilterChip(
-                selected = isSelected,
-                onClick = { onToggle(age) },
-                label = { Text(pluralStringResource(R.plurals.age_years, age, age)) },
-                leadingIcon = if (isSelected) {
-                    { Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
-                } else {
-                    null
-                },
-            )
+        Spacer(Modifier.height(6.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+            Catalog.AGE_CHOICES.forEach { age ->
+                val isSelected = age in selected
+                Surface(
+                    checked = isSelected,
+                    onCheckedChange = { onToggle(age) },
+                    shape = MaterialTheme.shapes.small,
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh,
+                    contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                    border = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    modifier = Modifier
+                        .weight(1f)
+                        .heightIn(min = 44.dp),
+                ) {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 2.dp, vertical = 8.dp)) {
+                        Text(
+                            text = pluralStringResource(R.plurals.age_years, age, age),
+                            style = MaterialTheme.typography.labelLarge,
+                            maxLines = 1,
+                            softWrap = false,
+                        )
+                    }
+                }
+            }
         }
     }
 }

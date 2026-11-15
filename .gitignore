@@ -12,3 +12,5 @@ captures/
 *.aab
 *.jks
 *.keystore
+# Exception : clé de debug partagée, sans valeur de sécurité (voir app/build.gradle.kts).
+!app/debug.keystore
