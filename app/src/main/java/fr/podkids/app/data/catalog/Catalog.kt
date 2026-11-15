@@ -10,7 +10,7 @@ import java.text.Normalizer
 import java.util.Locale
 
 /** Rubriques du catalogue, dans leur ordre d'affichage. */
-enum class CatalogCategory { BEDTIME, TALES, STORIES, DISCOVERY }
+enum class CatalogCategory { BEDTIME, TALES, STORIES, DISCOVERY, MUSIC }
 
 data class CatalogPodcast(
     val id: Long,
@@ -51,7 +51,8 @@ object Catalog {
 
     /**
      * Choix du sélecteur auquel un podcast est rattaché : son âge minimal, ramené aux bornes du
-     * sélecteur (un podcast « dès 2 ans » apparaît sous « 3 ans »).
+     * sélecteur. Un podcast « dès 2 ans » apparaît sous « 3 ans » ; un podcast « dès 9 ans » sous
+     * « 7 ans », le dernier choix valant pour 7 ans et plus.
      */
     fun ageChoiceOf(minAge: Int): Int = minAge.coerceIn(AGE_CHOICES.first(), AGE_CHOICES.last())
 

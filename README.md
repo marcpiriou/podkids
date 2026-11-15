@@ -6,8 +6,9 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
 
 - **Accueil** : la grille des podcasts ajoutés, suivie de la carte « Catalogue » qui défile avec elle.
 - **Catalogue** : sélection de podcasts pour enfants, classée par rubrique (Histoires du soir, Contes et
-  légendes, Histoires et aventures, Découvertes), avec un sélecteur d'âge à choix multiples (à partir de
-  3, 4, 5, 6 ou 7 ans), une recherche, et l'ajout d'un podcast à partir de l'adresse de son flux RSS.
+  légendes, Histoires et aventures, Découvertes, Musique), avec un sélecteur d'âge à choix multiples
+  (à partir de 3, 4, 5, 6 ou 7 ans), une recherche, et l'ajout d'un podcast à partir de l'adresse de son
+  flux RSS.
 - **Écoute** : un appui sur un épisode le lit en streaming ; la lecture continue en arrière-plan avec
   notification et commandes sur l'écran verrouillé.
 - **Téléchargement** : épisode par épisode ou tous les épisodes d'un podcast, pour l'écoute hors connexion.
@@ -24,13 +25,17 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
 Le catalogue est une sélection manuelle embarquée dans l'application : `app/src/main/assets/catalog.json`.
 Il ne contient que des podcasts francophones destinés aux enfants. Chaque entrée porte :
 
-- `minAge` : l'âge minimal **annoncé par l'éditeur** du podcast (dans la description de son flux ou, à
-  défaut, dans une déclaration publique de sa production). Un podcast sans âge annoncé n'est pas retenu.
-- `category` : la rubrique (`BEDTIME`, `TALES`, `STORIES`, `DISCOVERY`).
-- `feedUrl` et `artworkUrl` : le flux RSS public et la pochette.
+- `minAge` : l'âge minimal **annoncé par l'éditeur** du podcast : dans la description de son flux, à
+  défaut dans l'étiquette d'âge de sa page officielle (Radio France) ou dans une déclaration publique de
+  sa production. Un podcast sans âge annoncé n'est pas retenu.
+- `category` : la rubrique (`BEDTIME`, `TALES`, `STORIES`, `DISCOVERY`, `MUSIC`).
+- `feedUrl` et `artworkUrl` : le flux RSS public et la pochette. Pour Radio France (France Inter, France
+  Musique, France Culture, franceinfo, FIP, ICI), il s'agit des flux officiels `radiofrance-podcast.net`
+  référencés sur la page de chaque émission.
 
-Le sélecteur d'âge affiche les podcasts dont l'âge minimal correspond à l'un des âges cochés ; les podcasts
-annoncés pour les moins de 3 ans sont rattachés au choix « 3 ans ». Rien de coché : tous les âges.
+Le sélecteur d'âge affiche les podcasts dont l'âge minimal correspond à l'un des âges cochés. Les podcasts
+annoncés pour les moins de 3 ans sont rattachés au choix « 3 ans », ceux annoncés pour 8 ou 9 ans au choix
+« 7 ans » ; la pastille de chaque pochette indique l'âge exact. Rien de coché : tous les âges.
 
 Pour ajouter ou retirer un podcast, il suffit de modifier ce fichier ; un test unitaire en vérifie la
 cohérence. Tout autre podcast peut être ajouté par un adulte via son flux RSS.

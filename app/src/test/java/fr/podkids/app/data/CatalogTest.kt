@@ -59,6 +59,14 @@ class CatalogTest {
     }
 
     @Test
+    fun `le choix 7 ans regroupe les podcasts pour 7 ans et plus`() {
+        val older = sample + podcast(6, "Les aventures de Tina", 9, CatalogCategory.STORIES)
+        val ids = Catalog.filter(older, "", setOf(7), null).flatMap { it.podcasts }.map { it.id }
+        assertEquals(listOf(6L, 5L), ids)
+        assertEquals(7, Catalog.ageChoiceOf(9))
+    }
+
+    @Test
     fun `la rubrique et l'age se combinent`() {
         assertEquals(listOf(4L, 5L), ids(category = CatalogCategory.DISCOVERY))
         assertEquals(listOf(4L), ids(ages = setOf(5), category = CatalogCategory.DISCOVERY))
@@ -103,7 +111,7 @@ class CatalogTest {
         podcasts.forEach { podcast ->
             assertTrue("Flux en https : ${podcast.title}", podcast.feedUrl.startsWith("https://"))
             assertTrue("Pochette en https : ${podcast.title}", podcast.artworkUrl?.startsWith("https://") == true)
-            assertTrue("Âge entre 1 et 7 ans : ${podcast.title}", podcast.minAge in 1..7)
+            assertTrue("Âge entre 1 et 9 ans : ${podcast.title}", podcast.minAge in 1..9)
             assertTrue("Auteur renseigné : ${podcast.title}", podcast.author.isNotBlank())
         }
         // Chaque choix d'âge et chaque rubrique proposent au moins un podcast.

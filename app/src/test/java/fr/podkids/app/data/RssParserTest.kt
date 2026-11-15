@@ -6,6 +6,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class RssParserTest {
@@ -104,6 +105,21 @@ class RssParserTest {
         assertEquals("https://example.org/logo.png", feed.imageUrl)
         // Sans guid, l'adresse du fichier audio sert d'identifiant.
         assertEquals("https://example.org/1.mp3", feed.episodes.single().guid)
+    }
+
+    /** Extrait (structure réelle, textes remplacés) du flux officiel « Les aventures de Tina » de France Inter. */
+    @Test
+    fun `lit un flux Radio France`() {
+        val feed = javaClass.getResourceAsStream("/radiofrance_feed.xml")!!.use { RssParser.parse(it) }
+        assertEquals("Les aventures de Tina", feed.title)
+        assertTrue(feed.imageUrl!!.startsWith("https://www.radiofrance.fr/"))
+        assertEquals(2, feed.episodes.size)
+        val episode = feed.episodes.first()
+        assertEquals("6d9ebabc-559f-484b-aa6c-c1de5ca0ebb5", episode.guid)
+        assertTrue(episode.title.startsWith("Tina et les boucliers de Mars"))
+        assertTrue(episode.audioUrl.startsWith("https://proxycast.radiofrance.fr/"))
+        assertEquals(15 * 60 + 35L, episode.durationSec)
+        assertNotNull(episode.publishedAt)
     }
 
     @Test

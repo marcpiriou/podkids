@@ -1,6 +1,33 @@
 {
-  "version": 1,
+  "version": 2,
   "podcasts": [
+    {
+      "id": 9002346852216,
+      "title": "Une histoire et... Oli",
+      "author": "France Inter",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_d555ed4e-dbe5-4908-912e-b3169f9ceede.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/10/e9ad5830-54bd-4400-b908-5a51daa2b96c/1400x1400_sc_carre-une-histoire-et-oli-generique.jpg?1794690982195",
+      "minAge": 5,
+      "category": "BEDTIME"
+    },
+    {
+      "id": 9001598635605,
+      "title": "Histoires de doudou (Toudou)",
+      "author": "France Inter",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_8d53f49d-6a21-45fa-9f4b-8ce40df83913.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/10/67c444d0-f7b1-4063-8efe-26f360d9172c/1400x1400_sc_carre-histoire-de-doudou.jpg?1794740405771",
+      "minAge": 2,
+      "category": "BEDTIME"
+    },
+    {
+      "id": 9003010971005,
+      "title": "Chuchote-moi une histoire",
+      "author": "France Inter",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_55ffb3e4-fa69-4a71-b965-b286a992514d.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2026/05/64694093-2529-4587-9f06-1166fbbd358a/1400x1400_sc_carre-chuchote-moi.jpg?1794754253574",
+      "minAge": 3,
+      "category": "BEDTIME"
+    },
     {
       "id": 1659380569,
       "title": "Petit Lapin",
@@ -164,6 +191,15 @@
       "category": "BEDTIME"
     },
     {
+      "id": 9000553294518,
+      "title": "Les Contes de la Maison Ronde",
+      "author": "France Musique",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_23f2bcb0-573c-4212-bfc4-28db078a0f44.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2023/03/d093cefd-8cb1-4f87-99d2-7c355121a2d6/1400x1400_sc_sc_fm-podcast-contesdelamaisonronde-vignette.jpg?1794722072716",
+      "minAge": 6,
+      "category": "TALES"
+    },
+    {
       "id": 1818560415,
       "title": "Histoires magiques",
       "author": "AUDIO360",
@@ -179,6 +215,24 @@
       "feedUrl": "https://feed.ausha.co/8R4n3UpXrRpM",
       "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/c2/29/19/c22919d9-fadf-6421-ecb2-a6717d948098/mza_15157215656798793640.jpeg/600x600bb.jpg",
       "minAge": 3,
+      "category": "TALES"
+    },
+    {
+      "id": 1790640999,
+      "title": "Classiques jeunesse",
+      "author": "INA",
+      "feedUrl": "https://api.octopus.saooti.com/rss/playlist/505.rss?slug=podcasts.apple.com",
+      "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/25/92/2f/25922f5e-21c3-dd4d-22f3-3eeb6f9312be/mza_16339374108562535301.jpg/600x600bb.jpg",
+      "minAge": 9,
+      "category": "TALES"
+    },
+    {
+      "id": 6831316796,
+      "title": "Les histoires classiques racontées aux enfants",
+      "author": "Les Classiques",
+      "feedUrl": "https://anchor.fm/s/1195ec170/podcast/rss",
+      "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/b1/bc/2a/b1bc2a93-9f7e-e5e5-8b92-92f39c1f037f/mza_3217093738949101690.jpg/600x600bb.jpg",
+      "minAge": 8,
       "category": "TALES"
     },
     {
@@ -234,6 +288,42 @@
       "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts124/v4/1e/a8/d4/1ea8d491-c57f-067b-fd2a-8a4ed22efd3f/mza_10390145606841006582.jpg/600x600bb.jpg",
       "minAge": 3,
       "category": "TALES"
+    },
+    {
+      "id": 9002063295313,
+      "title": "Les aventures de Tina",
+      "author": "France Inter",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_42dc42b4-ea66-4bbb-98a8-747807cfe7bf.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/10/b9d34cde-f3ff-4920-ab64-b0ec284613cd/1400x1400_sc_carre-les-aventures-de-tina-generique.jpg?1794766842911",
+      "minAge": 9,
+      "category": "STORIES"
+    },
+    {
+      "id": 9001643376765,
+      "title": "Frissons",
+      "author": "France Inter",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_af2281de-45b0-45ae-87ea-7dea20d1cfd6.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/10/e249fa6d-1379-49c8-b7ed-88f7461b6bf4/1400x1400_sc_carre-frissons-saison-1.jpg?1794744371320",
+      "minAge": 8,
+      "category": "STORIES"
+    },
+    {
+      "id": 9000779070788,
+      "title": "Les Histoires du pince-oreille",
+      "author": "France Culture",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_b11d9a4f-48d8-438d-b2c7-daa456f10bc6.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2022/10/fa62730b-2510-4ac9-bb25-e1abae2aae2e/1400x1400_sc_les-histoires-du-pince-oreille.jpg?1794727958311",
+      "minAge": 6,
+      "category": "STORIES"
+    },
+    {
+      "id": 9004074639541,
+      "title": "L’odyssée de Musky",
+      "author": "ICI",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_5eb2cb53-b42f-4439-a709-0945735ec3da.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/05/fcf0ad11-87f6-4d75-8024-7a6c0bdf0931/1400x1400_sc_carre-lodysseedemusky.jpg?1794766778503",
+      "minAge": 6,
+      "category": "STORIES"
     },
     {
       "id": 1463322273,
@@ -389,6 +479,78 @@
       "category": "STORIES"
     },
     {
+      "id": 9002928256791,
+      "title": "Les Odyssées",
+      "author": "France Inter",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_c361798b-d6e3-4282-ba0a-ebb051b9e424.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2026/04/2bab1da1-f313-4183-88f3-d31acfdb9079/1400x1400_sc_carre-les-odyssees-avril-2026.jpg?1794690019054",
+      "minAge": 7,
+      "category": "DISCOVERY"
+    },
+    {
+      "id": 9003755895211,
+      "title": "Bestioles",
+      "author": "France Inter",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_a80ecbd5-df3d-4c9d-bee7-4e3d9efc1974.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/12/c7b61f65-164a-4ec8-b0dd-74a887acf3bc/1400x1400_sc_carre-bestioles-novembre.jpg?1794692497121",
+      "minAge": 5,
+      "category": "DISCOVERY"
+    },
+    {
+      "id": 9003776508911,
+      "title": "Olma",
+      "author": "France Inter",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_b36923db-1d60-4fa3-a73d-b21a6d1d558b.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2026/03/8a91cf06-11ef-476a-86a4-f6fae27e287e/1400x1400_olma-arbres-nouveaux-e-pisodes.jpg?1794713550679",
+      "minAge": 8,
+      "category": "DISCOVERY"
+    },
+    {
+      "id": 9000242236513,
+      "title": "Les P'tits Bateaux",
+      "author": "France Inter",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_3d680a63-ec3d-11e1-a7b7-782bcb76618d.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production/2023/05/67b86ee2-78c7-41a9-9d89-62c95e619036/1400x1400_sc_les-p-tits-bateaux.jpg?1794766557706",
+      "minAge": 6,
+      "category": "DISCOVERY"
+    },
+    {
+      "id": 9001146895084,
+      "title": "Les Mondes de Chloé : à la belle étoile",
+      "author": "France Culture",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_42c4c385-d290-4244-81e6-fb42fd3cc869.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2023/03/2eb67eee-0880-42c2-8600-30b71d019ebe/1400x1400_sc_sc_fc-podcast-alabelleetoile-3000x3000px.jpg?1794701526710",
+      "minAge": 8,
+      "category": "DISCOVERY"
+    },
+    {
+      "id": 9001447453722,
+      "title": "Les aventures du professeur Caillou",
+      "author": "France Inter",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_9cfc0cf4-6d0d-4ffa-a327-0c099c366d3c.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/10/e57a2315-8a52-42d2-8fd7-7acaa3d157b8/1400x1400_sc_carre-les-aventures-du-professeur-caillou.jpg?1794691785419",
+      "minAge": 9,
+      "category": "DISCOVERY"
+    },
+    {
+      "id": 9000530431641,
+      "title": "Salut l'info !",
+      "author": "franceinfo",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_9f5486b0-38b5-4544-bf49-e24b18bd022c.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2024/07/ff2d16ff-1fb5-495d-bef8-23ab2a378fa4/1400x1400_sc_logo-sli-franceinfo-rvb.jpg?1794686616543",
+      "minAge": 7,
+      "category": "DISCOVERY"
+    },
+    {
+      "id": 9004139471578,
+      "title": "Les explorateurs de l'Univers",
+      "author": "France Inter",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_ac741429-ff3b-494f-ae1a-ec4eeb47db35.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/10/db88ac5f-5014-4d3c-a260-7df44d6ffa0c/1400x1400_sc_carre-lexplorateurslunivers.jpg?1794766745566",
+      "minAge": 9,
+      "category": "DISCOVERY"
+    },
+    {
       "id": 1719924094,
       "title": "Les Voyages d'Amélia au coeur de l'Histoire",
       "author": "Europe 1",
@@ -434,6 +596,24 @@
       "category": "DISCOVERY"
     },
     {
+      "id": 6805886771,
+      "title": "Quoi de neuf Billy ?",
+      "author": "Billy the cast",
+      "feedUrl": "https://feeds.audiomeans.fr/feed/18026830-a30b-49ef-a3c9-6eb9220857d7.xml",
+      "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/41/5e/64/415e6424-6855-b81d-556c-2e819e168c9e/mza_4717876203284961578.jpg/600x600bb.jpg",
+      "minAge": 8,
+      "category": "DISCOVERY"
+    },
+    {
+      "id": 1561941208,
+      "title": "Nouvelles Héroïnes",
+      "author": "Céline Steyer",
+      "feedUrl": "https://feeds.audiomeans.fr/feed/de34c902-6dce-477b-95c0-4482c48abae0.xml",
+      "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/b5/fd/42/b5fd42ef-8d4b-f07a-8105-375cc970baae/mza_11626836007256862740.jpg/600x600bb.jpg",
+      "minAge": 8,
+      "category": "DISCOVERY"
+    },
+    {
       "id": 1818560555,
       "title": "Mission pourquoi ?",
       "author": "AUDIO360",
@@ -449,6 +629,15 @@
       "feedUrl": "https://feed.ausha.co/oadXQcQww82p",
       "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/8c/40/5d/8c405d1f-1864-ef4a-fdda-3d03c41d80c7/mza_8786610072852130034.jpeg/600x600bb.jpg",
       "minAge": 6,
+      "category": "DISCOVERY"
+    },
+    {
+      "id": 1616160391,
+      "title": "PolitiKids",
+      "author": "Billy the cast",
+      "feedUrl": "https://feeds.audiomeans.fr/feed/7ea66190-a1ee-4aaa-b90f-86c7e7a62927.xml",
+      "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/51/fc/f4/51fcf434-4dff-412e-573d-7046a8dbf48f/mza_6227808971825714131.jpg/600x600bb.jpg",
+      "minAge": 8,
       "category": "DISCOVERY"
     },
     {
@@ -494,6 +683,15 @@
       "feedUrl": "https://anchor.fm/s/e8c21454/podcast/rss",
       "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/9d/75/73/9d7573ac-dcfa-8189-1c05-7e86fc0f00be/mza_15251748697163127191.jpg/600x600bb.jpg",
       "minAge": 7,
+      "category": "DISCOVERY"
+    },
+    {
+      "id": 6834473245,
+      "title": "Les Épopées de Caro",
+      "author": "Les Ondes d'AlBa",
+      "feedUrl": "https://ondesdalba.fr/feed/epopees-de-caro",
+      "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/bc/9f/94/bc9f94b5-2eb9-38b3-c227-04e1d4e06900/mza_6922286720189111282.jpg/600x600bb.jpg",
+      "minAge": 8,
       "category": "DISCOVERY"
     },
     {
@@ -558,6 +756,51 @@
       "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/da/9d/18/da9d1878-4f57-80d2-4255-7d94c0633220/mza_12131011002276250189.jpeg/600x600bb.jpg",
       "minAge": 7,
       "category": "DISCOVERY"
+    },
+    {
+      "id": 9002193875464,
+      "title": "L'Oreille en colimaçon",
+      "author": "France Musique",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_c1732861-cab5-4884-bf84-86ba262e91be.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/03/c5f52c67-ace4-4e45-a570-2d32cbe199bf/1400x1400_sc_fm-loreilleencolimacon-1400x1400.jpg?1794762875691",
+      "minAge": 4,
+      "category": "MUSIC"
+    },
+    {
+      "id": 9003260641153,
+      "title": "Les aventures d'Octave et Mélo",
+      "author": "France Musique",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_b74c0784-60e1-4d07-a52d-dd62b17ab3e9.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2022/05/b54c2fa9-608c-4e37-8166-fb0748e52363/1400x1400_sc_fm-octaveetmelo-vignette-3000x3000px.jpg?1794727958451",
+      "minAge": 3,
+      "category": "MUSIC"
+    },
+    {
+      "id": 9003091925880,
+      "title": "Les Zinstrus",
+      "author": "France Musique",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_493bab46-b04e-4f3b-a705-3b11d0fd61d8.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2024/08/f24dec06-c3ca-4a63-b2f9-8d10b78c16df/1400x1400_sc_zintrus-generique.jpg?1794730338657",
+      "minAge": 6,
+      "category": "MUSIC"
+    },
+    {
+      "id": 9003113064157,
+      "title": "Le labo musical de Nico",
+      "author": "France Musique",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_8fe8c774-8b39-44b2-82c1-67b8e33c02e6.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2026/05/7f5561f8-2b91-4c0b-bbd7-0f76a67315aa/1400x1400_sc_fm-labodenico-3000x3000.jpg?1794702022402",
+      "minAge": 7,
+      "category": "MUSIC"
+    },
+    {
+      "id": 9002570068004,
+      "title": "La Discomobile",
+      "author": "FIP",
+      "feedUrl": "https://radiofrance-podcast.net/podcast09/podcast_427f434a-f6b0-4aeb-8aab-fe99a1178fcf.xml",
+      "artworkUrl": "https://www.radiofrance.fr/s3/cruiser-production-eu3/2023/12/db9bff9e-bb6a-453f-8f53-a0dff02ffe81/1400x1400_sc_sc_fip-discomobile-3000x3000.jpg?1794762876834",
+      "minAge": 7,
+      "category": "MUSIC"
     }
   ]
 }

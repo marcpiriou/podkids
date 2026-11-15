@@ -28,6 +28,7 @@ import androidx.compose.material.icons.rounded.AutoStories
 import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material.icons.rounded.Castle
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.RssFeed
 import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material.icons.rounded.Search
@@ -228,6 +229,7 @@ fun CatalogScreen(
 
 /**
  * Sélecteur d'âge à choix multiples : « À partir de » 3, 4, 5, 6 ou 7 ans. Rien de coché = tous les âges.
+ * Le dernier choix regroupe les podcasts annoncés pour 7 ans et plus.
  * Les cinq choix se partagent la largeur pour rester tous visibles, quelle que soit la taille du texte.
  */
 @Composable
@@ -350,6 +352,7 @@ private fun CatalogCategory.labelRes(): Int = when (this) {
     CatalogCategory.TALES -> R.string.category_tales
     CatalogCategory.STORIES -> R.string.category_stories
     CatalogCategory.DISCOVERY -> R.string.category_discovery
+    CatalogCategory.MUSIC -> R.string.category_music
 }
 
 private fun CatalogCategory.icon(): ImageVector = when (this) {
@@ -357,4 +360,5 @@ private fun CatalogCategory.icon(): ImageVector = when (this) {
     CatalogCategory.TALES -> Icons.Rounded.Castle
     CatalogCategory.STORIES -> Icons.Rounded.AutoStories
     CatalogCategory.DISCOVERY -> Icons.Rounded.Science
+    CatalogCategory.MUSIC -> Icons.Rounded.MusicNote
 }

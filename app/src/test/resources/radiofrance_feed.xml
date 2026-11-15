@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:pa="http://podcastaddict.com" xmlns:podcastRF="http://radiofrance.fr/Lancelot/Podcast#" xmlns:googleplay="http://www.google.com/schemas/play-podcasts/1.0" version="2.0">
+  <channel>
+    <title>Les aventures de Tina</title>
+    <link>https://www.radiofrance.fr/franceinter/podcasts/les-aventures-de-tina</link>
+    <description>Description de test.</description>
+    <language>fr</language>
+    <copyright>Radio France</copyright>
+    <lastBuildDate>Sun, 15 Nov 2026 19:20:42 +0100</lastBuildDate>
+    <generator>Radio France</generator>
+    <image>
+      <url>https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/10/b9d34cde-f3ff-4920-ab64-b0ec284613cd/1400x1400_sc_carre-les-aventures-de-tina-generique.jpg?1794766842911</url>
+      <title>Les aventures de Tina</title>
+      <link>https://www.radiofrance.fr/franceinter/podcasts/les-aventures-de-tina</link>
+    </image>
+    <itunes:author>France Inter</itunes:author>
+    <itunes:category/>
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:image href="https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/10/b9d34cde-f3ff-4920-ab64-b0ec284613cd/1400x1400_sc_carre-les-aventures-de-tina-generique.jpg?1794766842911"/>
+    <itunes:owner>
+      <itunes:email>podcast@radiofrance.com</itunes:email>
+      <itunes:name>Radio France</itunes:name>
+    </itunes:owner>
+    <itunes:subtitle>Les aventures de Tina</itunes:subtitle>
+    <itunes:summary>Résumé de test.</itunes:summary>
+    <itunes:new-feed-url>https://radiofrance-podcast.net/podcast09/35099478-7c72-4f9e-a6de-1b928400e9e5/podcast_42dc42b4-ea66-4bbb-98a8-747807cfe7bf.xml</itunes:new-feed-url>
+    <pa:new-feed-url>https://radiofrance-podcast.net/podcast09/d4463877-caa3-4507-9399-f5eb00fde027/podcast_42dc42b4-ea66-4bbb-98a8-747807cfe7bf.xml</pa:new-feed-url>
+    <podcastRF:originStation>1</podcastRF:originStation>
+    <googleplay:block>yes</googleplay:block>
+    <item>
+      <title>Tina et les boucliers de Mars 1/10 : Les 12 anciles</title>
+      <link>https://www.radiofrance.fr</link>
+      <description>Description de test.</description>
+      <author>podcast@radiofrance.com (Radio France)</author>
+      <enclosure url="https://proxycast.radiofrance.fr/0760f712-f39e-4aba-a3f2-891453f91f66/42dc42b4-ea66-4bbb-98a8-747807cfe7bf/69117b9c-159e-43f9-8f87-a14ab15d399c/27782-16.06.2026-ITEMA_24554447-2026F53890E0020-ITE_00159891_RSCE-27-2232a56498ba8aac128549588bcd28dd.m4a" length="14960000" type="audio/x-m4a"/>
+      <guid isPermaLink="false">6d9ebabc-559f-484b-aa6c-c1de5ca0ebb5</guid>
+      <pubDate>Fri, 21 Aug 2026 04:42:00 +0200</pubDate>
+      <podcastRF:businessReference>53890</podcastRF:businessReference>
+      <podcastRF:magnetothequeID>2026F53890E0020</podcastRF:magnetothequeID>
+      <itunes:title>Tina et les boucliers de Mars 1/10 : Les 12 anciles</itunes:title>
+      <itunes:author>France Inter</itunes:author>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:keywords>les, 12, anciles</itunes:keywords>
+      <itunes:subtitle>Les 12 anciles</itunes:subtitle>
+      <itunes:summary>Résumé de test.</itunes:summary>
+      <itunes:duration>00:15:35</itunes:duration>
+      <itunes:image href="https://www.radiofrance.fr/s3/cruiser-production-eu3/2026/06/e6405e30-ed8d-4147-8a20-37a7099e9fd1/1400x1400_sc_tina-saison-4-1400x1400.jpg"/>
+      <googleplay:block>yes</googleplay:block>
+    </item>
+    <item>
+      <title>Tina et les boucliers de Mars 2/10 : La colère de Mars</title>
+      <link>https://www.radiofrance.fr</link>
+      <description>Description de test.</description>
+      <author>podcast@radiofrance.com (Radio France)</author>
+      <enclosure url="https://proxycast.radiofrance.fr/0760f712-f39e-4aba-a3f2-891453f91f66/42dc42b4-ea66-4bbb-98a8-747807cfe7bf/d03774cb-bc71-4f7c-9a12-457b4df90e2d/27782-16.06.2026-ITEMA_24554447-2026F53890E0019-ITE_00159892_RSCE-27-616632256a6236d872a6bb85265db5d9.m4a" length="13776000" type="audio/x-m4a"/>
+      <guid isPermaLink="false">d066667c-42d7-4b66-bfe7-02efe3993cf7</guid>
+      <pubDate>Thu, 20 Aug 2026 04:42:00 +0200</pubDate>
+      <podcastRF:businessReference>53890</podcastRF:businessReference>
+      <podcastRF:magnetothequeID>2026F53890E0019</podcastRF:magnetothequeID>
+      <itunes:title>Tina et les boucliers de Mars 2/10 : La colère de Mars</itunes:title>
+      <itunes:author>France Inter</itunes:author>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:keywords>la, colère, de, mars</itunes:keywords>
+      <itunes:subtitle>La colère de Mars</itunes:subtitle>
+      <itunes:summary>Résumé de test.</itunes:summary>
+      <itunes:duration>00:14:21</itunes:duration>
+      <itunes:image href="https://www.radiofrance.fr/s3/cruiser-production-eu3/2026/06/e6405e30-ed8d-4147-8a20-37a7099e9fd1/1400x1400_sc_tina-saison-4-1400x1400.jpg"/>
+      <googleplay:block>yes</googleplay:block>
+    </item>
+</channel>
+</rss>
