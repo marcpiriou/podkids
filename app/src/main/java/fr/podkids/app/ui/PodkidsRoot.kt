@@ -134,7 +134,6 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     onBack = { navController.popBackStack() },
                     onQueryChange = viewModel::onQueryChange,
                     onToggleAge = viewModel::toggleAge,
-                    onSelectCategory = viewModel::selectCategory,
                     onOpen = viewModel::open,
                     onAddByRssUrl = viewModel::addByRssUrl,
                     onDismissOpenError = viewModel::dismissOpenError,

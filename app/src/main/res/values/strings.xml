@@ -35,12 +35,6 @@
         <item quantity="many">Dès %1$d ans</item>
         <item quantity="other">Dès %1$d ans</item>
     </plurals>
-    <string name="category_all">Tout</string>
-    <string name="category_bedtime">Histoires du soir</string>
-    <string name="category_tales">Contes et légendes</string>
-    <string name="category_stories">Histoires et aventures</string>
-    <string name="category_discovery">Découvertes</string>
-    <string name="category_music">Musique</string>
     <string name="catalog_no_result">Aucun podcast ne correspond à ces critères.</string>
     <string name="add_rss">Ajouter un flux RSS</string>
     <string name="add_rss_explanation">Colle ici l’adresse du flux RSS du podcast à ajouter.</string>
