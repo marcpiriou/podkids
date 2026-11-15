@@ -19,7 +19,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import fr.podkids.app.AppContainer
 import fr.podkids.app.MainActivity
 import fr.podkids.app.PodkidsApp
-import fr.podkids.app.data.catalog.CatalogApi
+import fr.podkids.app.data.Http
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -54,7 +54,7 @@ class PlaybackService : MediaSessionService() {
         // Les adresses audio des podcasts passent souvent par des redirections http <-> https
         // (mesure d'audience) : elles sont refusées par défaut, on les autorise explicitement.
         val httpDataSourceFactory = DefaultHttpDataSource.Factory()
-            .setUserAgent(CatalogApi.USER_AGENT)
+            .setUserAgent(Http.USER_AGENT)
             .setAllowCrossProtocolRedirects(true)
         val dataSourceFactory = DefaultDataSource.Factory(this, httpDataSourceFactory)
 

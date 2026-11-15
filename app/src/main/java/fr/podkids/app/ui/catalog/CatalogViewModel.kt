@@ -3,16 +3,21 @@ package fr.podkids.app.ui.catalog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fr.podkids.app.data.PodcastRepository
-import fr.podkids.app.data.catalog.CatalogApi
+import fr.podkids.app.data.catalog.Catalog
 import fr.podkids.app.data.catalog.CatalogCategory
 import fr.podkids.app.data.catalog.CatalogPodcast
+import fr.podkids.app.data.catalog.CatalogRepository
+import fr.podkids.app.data.catalog.CatalogSection
 import fr.podkids.app.data.rss.InvalidFeedException
+import fr.podkids.app.data.settings.SettingsRepository
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -20,13 +25,14 @@ import kotlinx.coroutines.launch
 enum class CatalogError { NETWORK, INVALID_FEED }
 
 data class CatalogUiState(
+    val loading: Boolean = true,
     val query: String = "",
-    /** Recherche actuellement affichée (vide = classement de la rubrique). */
-    val activeSearch: String = "",
-    val category: CatalogCategory = CatalogCategory.TOP,
-    val loading: Boolean = false,
-    val results: List<CatalogPodcast> = emptyList(),
-    val listError: Boolean = false,
+    /** Choix d'âge cochés ; vide = tous les âges. */
+    val ages: Set<Int> = emptySet(),
+    /** Rubrique retenue ; null = toutes. */
+    val category: CatalogCategory? = null,
+    /** Podcasts correspondant aux critères, regroupés par rubrique. */
+    val sections: List<CatalogSection> = emptyList(),
     /** Ouverture d'un podcast en cours (chargement de son flux RSS). */
     val opening: Boolean = false,
     val openError: CatalogError? = null,
@@ -34,7 +40,8 @@ data class CatalogUiState(
 
 class CatalogViewModel(
     private val repository: PodcastRepository,
-    private val catalog: CatalogApi,
+    private val catalog: CatalogRepository,
+    private val settings: SettingsRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CatalogUiState())
@@ -45,35 +52,30 @@ class CatalogViewModel(
     /** Identifiants des podcasts à ouvrir une fois leur flux chargé. */
     val openPodcast = _openPodcast.receiveAsFlow()
 
-    private var loadJob: Job? = null
-    private val topCache = mutableMapOf<CatalogCategory, List<CatalogPodcast>>()
+    private var podcasts: List<CatalogPodcast> = emptyList()
 
     init {
-        loadTop(CatalogCategory.TOP)
-    }
-
-    fun onQueryChange(query: String) {
-        _state.update { it.copy(query = query) }
-        if (query.isBlank() && _state.value.activeSearch.isNotEmpty()) loadTop(_state.value.category)
-    }
-
-    fun search() {
-        val term = _state.value.query.trim()
-        if (term.isEmpty()) {
-            loadTop(_state.value.category)
-            return
+        viewModelScope.launch {
+            podcasts = runCatching { catalog.podcasts() }.getOrDefault(emptyList())
+            // Les âges cochés sont mémorisés dans les réglages : ils sont retrouvés à chaque visite.
+            val savedAges = settings.settings.first().catalogAges
+            _state.update { it.copy(loading = false, ages = savedAges).withSections() }
+            settings.settings.map { it.catalogAges }.distinctUntilChanged().collect { ages ->
+                _state.update { it.copy(ages = ages).withSections() }
+            }
         }
-        load(activeSearch = term, category = _state.value.category) { catalog.search(term) }
     }
 
-    fun selectCategory(category: CatalogCategory) {
-        _state.update { it.copy(query = "") }
-        loadTop(category)
+    fun onQueryChange(query: String) = _state.update { it.copy(query = query).withSections() }
+
+    fun toggleAge(age: Int) {
+        val current = _state.value.ages
+        val ages = if (age in current) current - age else current + age
+        _state.update { it.copy(ages = ages).withSections() }
+        viewModelScope.launch { settings.setCatalogAges(ages) }
     }
 
-    fun retry() {
-        if (_state.value.activeSearch.isNotEmpty()) search() else loadTop(_state.value.category)
-    }
+    fun selectCategory(category: CatalogCategory?) = _state.update { it.copy(category = category).withSections() }
 
     fun open(podcast: CatalogPodcast) = openFeed(podcast.feedUrl, podcast.artworkUrl, subscribe = false)
 
@@ -81,28 +83,8 @@ class CatalogViewModel(
 
     fun dismissOpenError() = _state.update { it.copy(openError = null) }
 
-    private fun loadTop(category: CatalogCategory) {
-        load(activeSearch = "", category = category) {
-            topCache[category] ?: catalog.top(category).also { if (it.isNotEmpty()) topCache[category] = it }
-        }
-    }
-
-    private fun load(activeSearch: String, category: CatalogCategory, fetch: suspend () -> List<CatalogPodcast>) {
-        loadJob?.cancel()
-        _state.update {
-            it.copy(activeSearch = activeSearch, category = category, loading = true, listError = false, results = emptyList())
-        }
-        loadJob = viewModelScope.launch {
-            try {
-                val results = fetch()
-                _state.update { it.copy(loading = false, results = results) }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _state.update { it.copy(loading = false, listError = true) }
-            }
-        }
-    }
+    private fun CatalogUiState.withSections(): CatalogUiState =
+        copy(sections = Catalog.filter(podcasts, query, ages, category))
 
     private fun openFeed(feedUrl: String, fallbackImageUrl: String?, subscribe: Boolean) {
         if (_state.value.opening) return

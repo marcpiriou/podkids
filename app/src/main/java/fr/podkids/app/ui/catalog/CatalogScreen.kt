@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
@@ -22,12 +23,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.AutoStories
+import androidx.compose.material.icons.rounded.Bedtime
+import androidx.compose.material.icons.rounded.Castle
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Pets
 import androidx.compose.material.icons.rounded.RssFeed
-import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,12 +54,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import fr.podkids.app.R
+import fr.podkids.app.data.catalog.Catalog
 import fr.podkids.app.data.catalog.CatalogCategory
 import fr.podkids.app.data.catalog.CatalogPodcast
 import fr.podkids.app.data.settings.UiSettings
@@ -70,9 +74,8 @@ fun CatalogScreen(
     settings: UiSettings,
     onBack: () -> Unit,
     onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit,
-    onSelectCategory: (CatalogCategory) -> Unit,
-    onRetry: () -> Unit,
+    onToggleAge: (Int) -> Unit,
+    onSelectCategory: (CatalogCategory?) -> Unit,
     onOpen: (CatalogPodcast) -> Unit,
     onAddByRssUrl: (String) -> Unit,
     onDismissOpenError: () -> Unit,
@@ -121,47 +124,26 @@ fun CatalogScreen(
                 singleLine = true,
                 shape = MaterialTheme.shapes.large,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        keyboard?.hide()
-                        onSearch()
-                    },
-                ),
+                keyboardActions = KeyboardActions(onSearch = { keyboard?.hide() }),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
             )
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-            ) {
-                CatalogCategory.entries.forEach { category ->
-                    FilterChip(
-                        selected = state.activeSearch.isEmpty() && state.category == category,
-                        onClick = { onSelectCategory(category) },
-                        label = { Text(stringResource(category.labelRes())) },
-                        leadingIcon = {
-                            Icon(category.icon(), contentDescription = null, modifier = Modifier.size(18.dp))
-                        },
-                    )
-                }
-            }
+            AgeSelector(selected = state.ages, onToggle = onToggleAge)
+            CategorySelector(selected = state.category, onSelect = onSelectCategory)
 
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
                     state.loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-                    state.listError -> CatalogMessage(
-                        text = stringResource(R.string.catalog_error),
-                        actionLabel = stringResource(R.string.retry),
-                        onAction = onRetry,
-                    )
-                    state.results.isEmpty() -> CatalogMessage(
-                        text = stringResource(
-                            if (state.activeSearch.isEmpty()) R.string.catalog_empty else R.string.search_no_result,
-                        ),
+                    state.sections.isEmpty() -> Text(
+                        text = stringResource(R.string.catalog_no_result),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(32.dp),
                     )
                     else -> LazyVerticalGrid(
                         columns = GridCells.Adaptive(minSize = settings.tileSize.minWidthDp.dp),
@@ -171,13 +153,25 @@ fun CatalogScreen(
                         verticalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier.fillMaxSize(),
                     ) {
-                        items(state.results, key = { it.id }) { podcast ->
-                            PodcastTile(
-                                title = podcast.title,
-                                subtitle = podcast.author,
-                                imageUrl = podcast.artworkUrl,
-                                onClick = { onOpen(podcast) },
-                            )
+                        state.sections.forEach { section ->
+                            // Le titre de rubrique est inutile quand une seule rubrique est affichée par choix.
+                            if (state.category == null) {
+                                item(
+                                    key = "section-${section.category.name}",
+                                    span = { GridItemSpan(maxLineSpan) },
+                                ) {
+                                    SectionHeader(category = section.category, count = section.podcasts.size)
+                                }
+                            }
+                            items(section.podcasts, key = { it.id }) { podcast ->
+                                PodcastTile(
+                                    title = podcast.title,
+                                    subtitle = podcast.author,
+                                    imageUrl = podcast.artworkUrl,
+                                    badge = pluralStringResource(R.plurals.age_from, podcast.minAge, podcast.minAge),
+                                    onClick = { onOpen(podcast) },
+                                )
+                            }
                         }
                     }
                 }
@@ -230,25 +224,78 @@ fun CatalogScreen(
     }
 }
 
+/** Sélecteur d'âge à choix multiples : « À partir de » 3, 4, 5, 6 ou 7 ans. Rien de coché = tous les âges. */
 @Composable
-private fun CatalogMessage(text: String, actionLabel: String? = null, onAction: () -> Unit = {}) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+private fun AgeSelector(selected: Set<Int>, onToggle: (Int) -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
+            .horizontalScroll(rememberScrollState())
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp),
     ) {
         Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
+            text = stringResource(R.string.age_selector_label),
+            style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
         )
-        if (actionLabel != null) {
-            Spacer(Modifier.height(16.dp))
-            Button(onClick = onAction) { Text(actionLabel) }
+        Catalog.AGE_CHOICES.forEach { age ->
+            val isSelected = age in selected
+            FilterChip(
+                selected = isSelected,
+                onClick = { onToggle(age) },
+                label = { Text(pluralStringResource(R.plurals.age_years, age, age)) },
+                leadingIcon = if (isSelected) {
+                    { Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                } else {
+                    null
+                },
+            )
         }
+    }
+}
+
+@Composable
+private fun CategorySelector(selected: CatalogCategory?, onSelect: (CatalogCategory?) -> Unit) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
+    ) {
+        FilterChip(
+            selected = selected == null,
+            onClick = { onSelect(null) },
+            label = { Text(stringResource(R.string.category_all)) },
+        )
+        CatalogCategory.entries.forEach { category ->
+            FilterChip(
+                selected = selected == category,
+                onClick = { onSelect(category) },
+                label = { Text(stringResource(category.labelRes())) },
+                leadingIcon = {
+                    Icon(category.icon(), contentDescription = null, modifier = Modifier.size(18.dp))
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun SectionHeader(category: CatalogCategory, count: Int) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
+        Icon(category.icon(), contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Spacer(Modifier.size(8.dp))
+        Text(
+            text = stringResource(category.labelRes()),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = count.toString(),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -287,15 +334,15 @@ private fun AddRssDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
 }
 
 private fun CatalogCategory.labelRes(): Int = when (this) {
-    CatalogCategory.TOP -> R.string.category_top
+    CatalogCategory.BEDTIME -> R.string.category_bedtime
+    CatalogCategory.TALES -> R.string.category_tales
     CatalogCategory.STORIES -> R.string.category_stories
-    CatalogCategory.LEARNING -> R.string.category_learning
-    CatalogCategory.ANIMALS -> R.string.category_animals
+    CatalogCategory.DISCOVERY -> R.string.category_discovery
 }
 
 private fun CatalogCategory.icon(): ImageVector = when (this) {
-    CatalogCategory.TOP -> Icons.Rounded.Star
+    CatalogCategory.BEDTIME -> Icons.Rounded.Bedtime
+    CatalogCategory.TALES -> Icons.Rounded.Castle
     CatalogCategory.STORIES -> Icons.Rounded.AutoStories
-    CatalogCategory.LEARNING -> Icons.Rounded.School
-    CatalogCategory.ANIMALS -> Icons.Rounded.Pets
+    CatalogCategory.DISCOVERY -> Icons.Rounded.Science
 }

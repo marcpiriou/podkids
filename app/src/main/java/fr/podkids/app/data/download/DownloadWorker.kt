@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import fr.podkids.app.PodkidsApp
-import fr.podkids.app.data.catalog.CatalogApi
+import fr.podkids.app.data.Http
 import fr.podkids.app.data.db.DownloadState
 import fr.podkids.app.data.db.EpisodeEntity
 import kotlinx.coroutines.CancellationException
@@ -79,7 +79,7 @@ class DownloadWorker(
         val existing = if (part.exists()) part.length() else 0L
         val request = Request.Builder()
             .url(episode.audioUrl)
-            .header("User-Agent", CatalogApi.USER_AGENT)
+            .header("User-Agent", Http.USER_AGENT)
             .apply { if (existing > 0) header("Range", "bytes=$existing-") }
             .build()
 

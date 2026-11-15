@@ -17,13 +17,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.DarkMode
-import androidx.compose.material.icons.rounded.Face
 import androidx.compose.material.icons.rounded.FormatSize
 import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Palette
@@ -34,16 +32,11 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,27 +44,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.podkids.app.R
 import fr.podkids.app.data.settings.DarkMode
-import fr.podkids.app.data.settings.SettingsRepository
 import fr.podkids.app.data.settings.TextSize
 import fr.podkids.app.data.settings.ThemeColor
 import fr.podkids.app.data.settings.TileSize
 import fr.podkids.app.data.settings.UiSettings
 import fr.podkids.app.ui.theme.palette
 
-/** Réglages : personnalisation de l'interface (prénom, couleur, apparence, tailles). */
+/** Réglages : personnalisation de l'interface (couleur, apparence, tailles). */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     settings: UiSettings,
     versionName: String,
     onBack: () -> Unit,
-    onChildNameChange: (String) -> Unit,
     onThemeColorChange: (ThemeColor) -> Unit,
     onDarkModeChange: (DarkMode) -> Unit,
     onTextSizeChange: (TextSize) -> Unit,
@@ -98,25 +87,6 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
-            SettingCard(icon = Icons.Rounded.Face, title = stringResource(R.string.setting_name)) {
-                // Saisie locale : évite que le curseur saute pendant l'enregistrement asynchrone.
-                var name by rememberSaveable { mutableStateOf(settings.childName) }
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = {
-                        name = it.take(SettingsRepository.MAX_NAME_LENGTH)
-                        onChildNameChange(name.trim())
-                    },
-                    placeholder = { Text(stringResource(R.string.setting_name_hint)) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Words,
-                        imeAction = ImeAction.Done,
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-
             SettingCard(icon = Icons.Rounded.Palette, title = stringResource(R.string.setting_color)) {
                 // Les cinq couleurs se partagent la largeur : toutes restent visibles sans défilement.
                 Row(modifier = Modifier.fillMaxWidth()) {

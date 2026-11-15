@@ -3,7 +3,7 @@ package fr.podkids.app
 import android.app.Application
 import android.content.Context
 import fr.podkids.app.data.PodcastRepository
-import fr.podkids.app.data.catalog.CatalogApi
+import fr.podkids.app.data.catalog.CatalogRepository
 import fr.podkids.app.data.db.PodkidsDatabase
 import fr.podkids.app.data.download.EpisodeDownloader
 import fr.podkids.app.data.settings.SettingsRepository
@@ -27,7 +27,7 @@ class AppContainer(context: Context) {
 
     val database: PodkidsDatabase = PodkidsDatabase.create(context)
     val settings = SettingsRepository(context)
-    val catalog = CatalogApi(httpClient)
+    val catalog = CatalogRepository(context)
     private val downloader = EpisodeDownloader(context, database.episodeDao())
     val repository = PodcastRepository(database, httpClient, downloader)
     val player = PlayerConnection(context)

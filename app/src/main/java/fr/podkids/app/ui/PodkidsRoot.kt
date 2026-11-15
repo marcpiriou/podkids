@@ -124,7 +124,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
             composable(Routes.CATALOG) {
                 val viewModel: CatalogViewModel = viewModel(
                     factory = viewModelFactory {
-                        initializer { CatalogViewModel(container.repository, container.catalog) }
+                        initializer { CatalogViewModel(container.repository, container.catalog, container.settings) }
                     },
                 )
                 val state by viewModel.state.collectAsStateWithLifecycle()
@@ -136,9 +136,8 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     settings = settings,
                     onBack = { navController.popBackStack() },
                     onQueryChange = viewModel::onQueryChange,
-                    onSearch = viewModel::search,
+                    onToggleAge = viewModel::toggleAge,
                     onSelectCategory = viewModel::selectCategory,
-                    onRetry = viewModel::retry,
                     onOpen = viewModel::open,
                     onAddByRssUrl = viewModel::addByRssUrl,
                     onDismissOpenError = viewModel::dismissOpenError,
@@ -185,7 +184,6 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     settings = settings,
                     versionName = BuildConfig.VERSION_NAME,
                     onBack = { navController.popBackStack() },
-                    onChildNameChange = { scope.launch { repository.setChildName(it) } },
                     onThemeColorChange = { scope.launch { repository.setThemeColor(it) } },
                     onDarkModeChange = { scope.launch { repository.setDarkMode(it) } },
                     onTextSizeChange = { scope.launch { repository.setTextSize(it) } },

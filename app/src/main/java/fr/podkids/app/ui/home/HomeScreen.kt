@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -91,10 +93,20 @@ fun HomeScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
+        // Le catalogue reste accessible tout en bas de l'écran, au-dessus du mini-lecteur.
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp),
+            ) {
+                CatalogCard(onClick = onOpenCatalog)
+            }
+        },
     ) { padding ->
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = settings.tileSize.minWidthDp.dp),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 24.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
             modifier = Modifier
@@ -102,27 +114,7 @@ fun HomeScreen(
                 .padding(padding),
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                Text(
-                    text = if (settings.childName.isBlank()) {
-                        stringResource(R.string.greeting)
-                    } else {
-                        stringResource(R.string.greeting_named, settings.childName)
-                    },
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            }
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                CatalogCard(onClick = onOpenCatalog)
-            }
-            item(span = { GridItemSpan(maxLineSpan) }) {
                 NowPlayingCard(state = playerState, onClick = onOpenPlayer, onTogglePlay = onTogglePlay)
-            }
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Text(
-                    text = stringResource(R.string.my_podcasts),
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(top = 8.dp),
-                )
             }
             if (library != null && library.isEmpty()) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
@@ -158,7 +150,9 @@ private fun FeatureCard(
     onClick: () -> Unit,
     trailing: @Composable (() -> Unit)? = null,
     leading: @Composable (() -> Unit)? = null,
+    compact: Boolean = false,
 ) {
+    val iconBoxSize = if (compact) 52.dp else 68.dp
     Card(
         onClick = onClick,
         shape = MaterialTheme.shapes.large,
@@ -170,7 +164,7 @@ private fun FeatureCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Brush.linearGradient(colors))
-                .padding(18.dp),
+                .padding(if (compact) 12.dp else 18.dp),
         ) {
             if (leading != null) {
                 leading()
@@ -178,11 +172,16 @@ private fun FeatureCard(
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .size(68.dp)
+                        .size(iconBoxSize)
                         .clip(CircleShape)
                         .background(Color.White.copy(alpha = 0.22f)),
                 ) {
-                    Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(40.dp))
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(iconBoxSize * 0.6f),
+                    )
                 }
             }
             Spacer(Modifier.width(16.dp))
@@ -191,7 +190,7 @@ private fun FeatureCard(
                     text = title,
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White,
-                    maxLines = 2,
+                    maxLines = if (compact) 1 else 2,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(2.dp))
@@ -199,7 +198,7 @@ private fun FeatureCard(
                     text = subtitle,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.92f),
-                    maxLines = 2,
+                    maxLines = if (compact) 1 else 2,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
@@ -220,6 +219,7 @@ private fun CatalogCard(onClick: () -> Unit) {
         subtitle = stringResource(R.string.catalog_card_subtitle),
         colors = listOf(palette.primary.forCard(), palette.secondary.forCard()),
         onClick = onClick,
+        compact = true,
     )
 }
 
@@ -268,19 +268,45 @@ private fun Color.forCard(): Color {
 }
 
 @Composable
-fun PodcastTile(title: String, imageUrl: String?, onClick: () -> Unit, subtitle: String? = null) {
+fun PodcastTile(
+    title: String,
+    imageUrl: String?,
+    onClick: () -> Unit,
+    subtitle: String? = null,
+    /** Pastille affichée sur la pochette (âge conseillé dans le catalogue). */
+    badge: String? = null,
+) {
     Column(
         modifier = Modifier
             .clip(MaterialTheme.shapes.medium)
             .clickable(onClick = onClick)
             .padding(4.dp),
     ) {
-        Artwork(
-            url = imageUrl,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f),
-        )
+        Box {
+            Artwork(
+                url = imageUrl,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f),
+            )
+            if (badge != null) {
+                Surface(
+                    color = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary,
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(6.dp),
+                ) {
+                    Text(
+                        text = badge,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                    )
+                }
+            }
+        }
         Spacer(Modifier.height(6.dp))
         Text(
             text = title,

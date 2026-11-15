@@ -4,9 +4,11 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
 
 ## Fonctionnalités
 
-- **Accueil** : deux grandes cartes (« Catalogue » et « Lecture en cours »), puis la grille « Mes podcasts ».
-- **Catalogue** : classements par rubrique (Les préférés, Histoires, Apprendre, Animaux), recherche,
-  et ajout d'un podcast à partir de l'adresse de son flux RSS.
+- **Accueil** : la carte « Lecture en cours », la grille des podcasts ajoutés, et le bouton « Catalogue »
+  fixé tout en bas de l'écran.
+- **Catalogue** : sélection de podcasts pour enfants, classée par rubrique (Histoires du soir, Contes et
+  légendes, Histoires et aventures, Découvertes), avec un sélecteur d'âge à choix multiples (à partir de
+  3, 4, 5, 6 ou 7 ans), une recherche, et l'ajout d'un podcast à partir de l'adresse de son flux RSS.
 - **Écoute** : un appui sur un épisode le lit en streaming ; la lecture continue en arrière-plan avec
   notification et commandes sur l'écran verrouillé.
 - **Téléchargement** : épisode par épisode ou tous les épisodes d'un podcast, pour l'écoute hors connexion.
@@ -15,14 +17,24 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
   de position) et file d'attente (ajout, réorganisation, suppression). La file et la position d'écoute
   sont conservées d'un lancement à l'autre.
 - **Mini-lecteur** : toujours visible en bas de l'écran dès qu'un épisode est chargé, avec la pochette à gauche.
-- **Réglages** (bouton en haut à gauche de l'accueil) : prénom de l'enfant, couleur du thème, apparence
+- **Réglages** (bouton en haut à gauche de l'accueil) : couleur du thème, apparence
   claire / sombre / automatique, taille du texte, taille des pochettes.
 
 ## Catalogue et contenus
 
-Le catalogue interroge l'annuaire public Apple Podcasts (iTunes Search API, sans clé ni compte). Ne sont
-retenus que les podcasts classés « Enfants et parents », non explicites, hors rubrique « Parentalité ».
-Tout autre podcast peut être ajouté par un adulte via son flux RSS.
+Le catalogue est une sélection manuelle embarquée dans l'application : `app/src/main/assets/catalog.json`.
+Il ne contient que des podcasts francophones destinés aux enfants. Chaque entrée porte :
+
+- `minAge` : l'âge minimal **annoncé par l'éditeur** du podcast (dans la description de son flux ou, à
+  défaut, dans une déclaration publique de sa production). Un podcast sans âge annoncé n'est pas retenu.
+- `category` : la rubrique (`BEDTIME`, `TALES`, `STORIES`, `DISCOVERY`).
+- `feedUrl` et `artworkUrl` : le flux RSS public et la pochette.
+
+Le sélecteur d'âge affiche les podcasts dont l'âge minimal correspond à l'un des âges cochés ; les podcasts
+annoncés pour les moins de 3 ans sont rattachés au choix « 3 ans ». Rien de coché : tous les âges.
+
+Pour ajouter ou retirer un podcast, il suffit de modifier ce fichier ; un test unitaire en vérifie la
+cohérence. Tout autre podcast peut être ajouté par un adulte via son flux RSS.
 
 ## Architecture
 

@@ -1,6 +1,5 @@
 package fr.podkids.app.data
 
-import fr.podkids.app.data.catalog.CatalogApi
 import fr.podkids.app.data.db.EpisodeEntity
 import fr.podkids.app.data.db.EpisodeWithPodcast
 import fr.podkids.app.data.db.PodcastEntity
@@ -135,7 +134,7 @@ class PodcastRepository(
     }
 
     private suspend fun fetchFeed(url: String): ParsedFeed = withContext(Dispatchers.IO) {
-        val request = Request.Builder().url(url).header("User-Agent", CatalogApi.USER_AGENT).build()
+        val request = Request.Builder().url(url).header("User-Agent", Http.USER_AGENT).build()
         httpClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw IOException("HTTP ${response.code}")
             RssParser.parse(response.body.byteStream())
