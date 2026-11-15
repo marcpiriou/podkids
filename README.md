@@ -4,8 +4,7 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
 
 ## Fonctionnalités
 
-- **Accueil** : la carte « Lecture en cours », la grille des podcasts ajoutés, et le bouton « Catalogue »
-  fixé tout en bas de l'écran.
+- **Accueil** : la grille des podcasts ajoutés, suivie de la carte « Catalogue » qui défile avec elle.
 - **Catalogue** : sélection de podcasts pour enfants, classée par rubrique (Histoires du soir, Contes et
   légendes, Histoires et aventures, Découvertes), avec un sélecteur d'âge à choix multiples (à partir de
   3, 4, 5, 6 ou 7 ans), une recherche, et l'ajout d'un podcast à partir de l'adresse de son flux RSS.

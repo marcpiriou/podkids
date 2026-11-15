@@ -20,11 +20,6 @@
     <string name="nothing_playing_hint">Choisis un épisode dans le catalogue ou dans tes podcasts pour l’écouter ici.</string>
     <string name="open_catalog">Ouvrir le catalogue</string>
     <string name="library_empty">Tu n’as pas encore de podcast. Ouvre le catalogue pour en ajouter !</string>
-    <plurals name="queue_count">
-        <item quantity="one">%1$d épisode à suivre</item>
-        <item quantity="many">%1$d épisodes à suivre</item>
-        <item quantity="other">%1$d épisodes à suivre</item>
-    </plurals>
 
     <!-- Catalogue -->
     <string name="search_hint">Chercher un podcast</string>

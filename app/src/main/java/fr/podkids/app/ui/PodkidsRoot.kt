@@ -112,12 +112,9 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                 HomeScreen(
                     library = library,
                     settings = settings,
-                    playerState = playerState,
                     onOpenSettings = { navController.navigate(Routes.SETTINGS) },
                     onOpenCatalog = { navController.navigate(Routes.CATALOG) },
-                    onOpenPlayer = { navController.openPlayer() },
                     onOpenPodcast = { navController.navigate(Routes.podcast(it)) },
-                    onTogglePlay = player::togglePlay,
                 )
             }
 
