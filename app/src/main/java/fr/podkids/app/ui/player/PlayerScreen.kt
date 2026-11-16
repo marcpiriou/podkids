@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Replay10
 import androidx.compose.material.icons.rounded.SkipNext
+import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,11 +71,13 @@ fun PlayerScreen(
     state: PlayerUiState,
     progress: StateFlow<PlaybackProgress>,
     onBack: () -> Unit,
-    onOpenCatalog: () -> Unit,
+    /** null : pas de bouton vers le catalogue (catalogue réservé aux réglages). */
+    onOpenCatalog: (() -> Unit)?,
     onTogglePlay: () -> Unit,
     onSeekBack: () -> Unit,
     onSeekForward: () -> Unit,
     onSeekTo: (Long) -> Unit,
+    onSkipPrevious: () -> Unit,
     onSkipNext: () -> Unit,
     onPlayUpcoming: (Int) -> Unit,
     onMoveUpcomingUp: (Int) -> Unit,
@@ -112,6 +117,7 @@ fun PlayerScreen(
                     onSeekBack = onSeekBack,
                     onSeekForward = onSeekForward,
                     onSeekTo = onSeekTo,
+                    onSkipPrevious = onSkipPrevious,
                     onSkipNext = onSkipNext,
                 )
             }
@@ -166,6 +172,7 @@ private fun NowPlaying(
     onSeekBack: () -> Unit,
     onSeekForward: () -> Unit,
     onSeekTo: (Long) -> Unit,
+    onSkipPrevious: () -> Unit,
     onSkipNext: () -> Unit,
 ) {
     Column(
@@ -200,52 +207,63 @@ private fun NowPlaying(
         )
         Spacer(Modifier.height(8.dp))
         SeekBar(progress = progress, onSeekTo = onSeekTo)
+        // Cinq commandes de largeur égale : précédent, -10 s, lecture, +30 s, suivant.
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            IconButton(onClick = onSeekBack, modifier = Modifier.size(64.dp)) {
-                Icon(
-                    Icons.Rounded.Replay10,
-                    contentDescription = stringResource(R.string.seek_back),
-                    modifier = Modifier.size(44.dp),
-                )
-            }
-            Box(contentAlignment = Alignment.Center) {
-                FilledIconButton(onClick = onTogglePlay, modifier = Modifier.size(88.dp)) {
+            ControlButton(
+                icon = Icons.Rounded.SkipPrevious,
+                description = stringResource(R.string.previous_episode),
+                enabled = state.hasPrevious,
+                onClick = onSkipPrevious,
+            )
+            ControlButton(
+                icon = Icons.Rounded.Replay10,
+                description = stringResource(R.string.seek_back),
+                onClick = onSeekBack,
+            )
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.weight(1.4f)) {
+                FilledIconButton(onClick = onTogglePlay, modifier = Modifier.size(80.dp)) {
                     Icon(
                         imageVector = if (state.isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                         contentDescription = stringResource(if (state.isPlaying) R.string.pause else R.string.play),
-                        modifier = Modifier.size(56.dp),
+                        modifier = Modifier.size(52.dp),
                     )
                 }
                 if (state.isBuffering) {
                     CircularProgressIndicator(
                         color = MaterialTheme.colorScheme.tertiary,
                         strokeWidth = 4.dp,
-                        modifier = Modifier.size(100.dp),
+                        modifier = Modifier.size(92.dp),
                     )
                 }
             }
-            IconButton(onClick = onSeekForward, modifier = Modifier.size(64.dp)) {
-                Icon(
-                    Icons.Rounded.Forward30,
-                    contentDescription = stringResource(R.string.seek_forward),
-                    modifier = Modifier.size(44.dp),
-                )
-            }
-            IconButton(
-                onClick = onSkipNext,
+            ControlButton(
+                icon = Icons.Rounded.Forward30,
+                description = stringResource(R.string.seek_forward),
+                onClick = onSeekForward,
+            )
+            ControlButton(
+                icon = Icons.Rounded.SkipNext,
+                description = stringResource(R.string.next_episode),
                 enabled = state.upcoming.isNotEmpty(),
-                modifier = Modifier.size(64.dp),
-            ) {
-                Icon(
-                    Icons.Rounded.SkipNext,
-                    contentDescription = stringResource(R.string.next_episode),
-                    modifier = Modifier.size(44.dp),
-                )
-            }
+                onClick = onSkipNext,
+            )
+        }
+    }
+}
+
+@Composable
+private fun RowScope.ControlButton(
+    icon: ImageVector,
+    description: String,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.weight(1f)) {
+        IconButton(onClick = onClick, enabled = enabled, modifier = Modifier.size(56.dp)) {
+            Icon(icon, contentDescription = description, modifier = Modifier.size(38.dp))
         }
     }
 }
@@ -328,7 +346,7 @@ private fun QueueRow(
 }
 
 @Composable
-private fun EmptyPlayer(onOpenCatalog: () -> Unit, modifier: Modifier = Modifier) {
+private fun EmptyPlayer(onOpenCatalog: (() -> Unit)?, modifier: Modifier = Modifier) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -355,11 +373,13 @@ private fun EmptyPlayer(onOpenCatalog: () -> Unit, modifier: Modifier = Modifier
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
-        Spacer(Modifier.height(24.dp))
-        Button(onClick = onOpenCatalog) {
-            Icon(Icons.Rounded.Explore, contentDescription = null)
-            Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.open_catalog))
+        if (onOpenCatalog != null) {
+            Spacer(Modifier.height(24.dp))
+            Button(onClick = onOpenCatalog) {
+                Icon(Icons.Rounded.Explore, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.open_catalog))
+            }
         }
     }
 }

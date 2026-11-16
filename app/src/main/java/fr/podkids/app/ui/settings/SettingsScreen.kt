@@ -3,6 +3,7 @@ package fr.podkids.app.ui.settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,9 @@ import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.FormatSize
 import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Explore
+import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +38,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -68,6 +73,9 @@ fun SettingsScreen(
     onTextSizeChange: (TextSize) -> Unit,
     onTileSizeChange: (TileSize) -> Unit,
     onEpisodeOrderChange: (EpisodeOrder) -> Unit,
+    onHideCatalogOnHomeChange: (Boolean) -> Unit,
+    onDownloadedOnlyChange: (Boolean) -> Unit,
+    onOpenCatalog: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -132,6 +140,30 @@ fun SettingsScreen(
                 )
             }
 
+            SettingCard(icon = Icons.Rounded.Shield, title = stringResource(R.string.setting_children_access)) {
+                SwitchRow(
+                    title = stringResource(R.string.setting_hide_catalog),
+                    description = stringResource(R.string.setting_hide_catalog_description),
+                    checked = settings.hideCatalogOnHome,
+                    onCheckedChange = onHideCatalogOnHomeChange,
+                )
+                if (settings.hideCatalogOnHome) {
+                    Spacer(Modifier.height(8.dp))
+                    Button(onClick = onOpenCatalog, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Rounded.Explore, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.open_catalog))
+                    }
+                }
+                Spacer(Modifier.height(12.dp))
+                SwitchRow(
+                    title = stringResource(R.string.setting_downloaded_only),
+                    description = stringResource(R.string.setting_downloaded_only_description),
+                    checked = settings.downloadedOnly,
+                    onCheckedChange = onDownloadedOnlyChange,
+                )
+            }
+
             SettingCard(icon = Icons.AutoMirrored.Rounded.Sort, title = stringResource(R.string.setting_episode_order)) {
                 ChoiceRow(
                     options = EpisodeOrder.entries,
@@ -169,6 +201,31 @@ private fun SettingCard(icon: ImageVector, title: String, content: @Composable (
             Spacer(Modifier.height(12.dp))
             content()
         }
+    }
+}
+
+/** Ligne de réglage avec interrupteur ; toute la ligne est cliquable. */
+@Composable
+private fun SwitchRow(title: String, description: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.small)
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
+            .padding(vertical = 4.dp),
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = title, style = MaterialTheme.typography.titleSmall)
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Spacer(Modifier.width(12.dp))
+        // L'interrupteur suit la ligne : le clic est géré par toggleable.
+        Switch(checked = checked, onCheckedChange = null)
     }
 }
 

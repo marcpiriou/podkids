@@ -59,7 +59,10 @@ data class EpisodeEntity(
     val localPath: String? = null,
 )
 
-/** File d'attente persistée : la position 0 est l'épisode en cours. */
+/**
+ * Liste de lecture persistée : la position 0 est l'épisode en cours, les positions négatives les
+ * épisodes précédents (historique), les positions positives la file d'attente.
+ */
 @Entity(tableName = "queue")
 data class QueueItemEntity(
     @PrimaryKey val position: Int,

@@ -3,6 +3,7 @@ package fr.podkids.app.data.settings
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -28,6 +29,10 @@ data class UiSettings(
     val tileSize: TileSize = TileSize.LARGE,
     /** Ordre des épisodes à l'ouverture d'un podcast (modifiable ensuite par l'icône de tri). */
     val episodeOrder: EpisodeOrder = EpisodeOrder.OLDEST_FIRST,
+    /** Le catalogue n'apparaît plus sur l'accueil : il ne s'ouvre que depuis les réglages. */
+    val hideCatalogOnHome: Boolean = false,
+    /** Seuls les épisodes téléchargés (et les podcasts qui en ont) sont affichés. */
+    val downloadedOnly: Boolean = false,
     /** Choix d'âge cochés dans le catalogue ; vide = tous les âges. */
     val catalogAges: Set<Int> = emptySet(),
 )
@@ -43,6 +48,8 @@ class SettingsRepository(private val context: Context) {
             textSize = enumOrDefault(prefs[KEY_TEXT_SIZE], TextSize.NORMAL),
             tileSize = enumOrDefault(prefs[KEY_TILE_SIZE], TileSize.LARGE),
             episodeOrder = enumOrDefault(prefs[KEY_EPISODE_ORDER], EpisodeOrder.OLDEST_FIRST),
+            hideCatalogOnHome = prefs[KEY_HIDE_CATALOG] ?: false,
+            downloadedOnly = prefs[KEY_DOWNLOADED_ONLY] ?: false,
             catalogAges = prefs[KEY_CATALOG_AGES].orEmpty()
                 .split(',')
                 .mapNotNull { it.trim().toIntOrNull() }
@@ -55,6 +62,8 @@ class SettingsRepository(private val context: Context) {
     suspend fun setTextSize(value: TextSize) = set(KEY_TEXT_SIZE, value.name)
     suspend fun setTileSize(value: TileSize) = set(KEY_TILE_SIZE, value.name)
     suspend fun setEpisodeOrder(value: EpisodeOrder) = set(KEY_EPISODE_ORDER, value.name)
+    suspend fun setHideCatalogOnHome(value: Boolean) = context.settingsDataStore.edit { it[KEY_HIDE_CATALOG] = value }
+    suspend fun setDownloadedOnly(value: Boolean) = context.settingsDataStore.edit { it[KEY_DOWNLOADED_ONLY] = value }
     suspend fun setCatalogAges(ages: Set<Int>) = set(KEY_CATALOG_AGES, ages.sorted().joinToString(","))
 
     private suspend fun set(key: Preferences.Key<String>, value: String) {
@@ -70,6 +79,8 @@ class SettingsRepository(private val context: Context) {
         val KEY_TEXT_SIZE = stringPreferencesKey("text_size")
         val KEY_TILE_SIZE = stringPreferencesKey("tile_size")
         val KEY_EPISODE_ORDER = stringPreferencesKey("episode_order")
+        val KEY_HIDE_CATALOG = booleanPreferencesKey("hide_catalog_on_home")
+        val KEY_DOWNLOADED_ONLY = booleanPreferencesKey("downloaded_only")
         val KEY_CATALOG_AGES = stringPreferencesKey("catalog_ages")
     }
 }

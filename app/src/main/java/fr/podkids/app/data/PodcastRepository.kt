@@ -25,7 +25,9 @@ class PodcastRepository(
     private val episodeDao = database.episodeDao()
     private val queueDao = database.queueDao()
 
-    fun observeLibrary(): Flow<List<PodcastEntity>> = podcastDao.observeSubscribed()
+    /** @param downloadedOnly ne garder que les podcasts ayant au moins un épisode téléchargé. */
+    fun observeLibrary(downloadedOnly: Boolean = false): Flow<List<PodcastEntity>> =
+        if (downloadedOnly) podcastDao.observeWithDownloads() else podcastDao.observeSubscribed()
 
     fun observePodcast(id: Long): Flow<PodcastEntity?> = podcastDao.observe(id)
 
@@ -110,9 +112,10 @@ class PodcastRepository(
 
     suspend fun markCompleted(episodeId: Long) = episodeDao.markCompleted(episodeId)
 
-    suspend fun loadQueue(): List<EpisodeWithPodcast> = queueDao.load()
+    /** Liste de lecture enregistrée et index de l'épisode en cours dans cette liste. */
+    suspend fun loadQueue(): Pair<List<EpisodeWithPodcast>, Int> = queueDao.loadWithCurrentIndex()
 
-    suspend fun saveQueue(episodeIds: List<Long>) = queueDao.replace(episodeIds)
+    suspend fun saveQueue(episodeIds: List<Long>, currentIndex: Int) = queueDao.replace(episodeIds, currentIndex)
 
     suspend fun cleanUpPreviews() = podcastDao.deleteUnusedPreviews()
 

@@ -31,6 +31,7 @@ import androidx.navigation.navArgument
 import fr.podkids.app.AppContainer
 import fr.podkids.app.BuildConfig
 import fr.podkids.app.R
+import fr.podkids.app.data.db.DownloadState
 import fr.podkids.app.data.settings.EpisodeOrder
 import fr.podkids.app.data.settings.UiSettings
 import fr.podkids.app.playback.PlayerUiState
@@ -108,7 +109,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                 .consumeWindowInsets(padding),
         ) {
             composable(Routes.HOME) {
-                val library by remember { container.repository.observeLibrary() }
+                val library by remember(settings.downloadedOnly) { container.repository.observeLibrary(settings.downloadedOnly) }
                     .collectAsStateWithLifecycle(initialValue = null)
                 HomeScreen(
                     library = library,
@@ -151,6 +152,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     container = container,
                     playerState = playerState,
                     defaultEpisodeOrder = settings.episodeOrder,
+                    downloadedOnly = settings.downloadedOnly,
                     onBack = { navController.popBackStack() },
                 )
             }
@@ -160,13 +162,17 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     state = playerState,
                     progress = player.progress,
                     onBack = { navController.popBackStack() },
-                    onOpenCatalog = {
-                        navController.navigate(Routes.CATALOG) { popUpTo(Routes.HOME) }
+                    // Pas de raccourci vers le catalogue quand il est réservé aux réglages.
+                    onOpenCatalog = if (settings.hideCatalogOnHome) {
+                        null
+                    } else {
+                        { navController.navigate(Routes.CATALOG) { popUpTo(Routes.HOME) } }
                     },
                     onTogglePlay = player::togglePlay,
                     onSeekBack = player::seekBack,
                     onSeekForward = player::seekForward,
                     onSeekTo = player::seekTo,
+                    onSkipPrevious = player::skipToPrevious,
                     onSkipNext = player::skipToNext,
                     onPlayUpcoming = player::playUpcoming,
                     onMoveUpcomingUp = player::moveUpcomingUp,
@@ -187,6 +193,9 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     onTextSizeChange = { scope.launch { repository.setTextSize(it) } },
                     onTileSizeChange = { scope.launch { repository.setTileSize(it) } },
                     onEpisodeOrderChange = { scope.launch { repository.setEpisodeOrder(it) } },
+                    onHideCatalogOnHomeChange = { scope.launch { repository.setHideCatalogOnHome(it) } },
+                    onDownloadedOnlyChange = { scope.launch { repository.setDownloadedOnly(it) } },
+                    onOpenCatalog = { navController.navigate(Routes.CATALOG) },
                 )
             }
         }
@@ -199,6 +208,7 @@ private fun PodcastRoute(
     container: AppContainer,
     playerState: PlayerUiState,
     defaultEpisodeOrder: EpisodeOrder,
+    downloadedOnly: Boolean,
     onBack: () -> Unit,
 ) {
     val viewModel: PodcastViewModel = viewModel(
@@ -208,7 +218,10 @@ private fun PodcastRoute(
         },
     )
     val podcast by viewModel.podcast.collectAsStateWithLifecycle()
-    val episodes by viewModel.episodes.collectAsStateWithLifecycle()
+    val allEpisodes by viewModel.episodes.collectAsStateWithLifecycle()
+    val episodes = remember(allEpisodes, downloadedOnly) {
+        if (downloadedOnly) allEpisodes.filter { it.downloadState == DownloadState.DOWNLOADED } else allEpisodes
+    }
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val order by viewModel.order.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -234,6 +247,7 @@ private fun PodcastRoute(
     PodcastScreen(
         podcast = podcast,
         episodes = episodes,
+        downloadedOnly = downloadedOnly,
         refreshing = refreshing,
         order = order,
         onToggleOrder = viewModel::toggleOrder,

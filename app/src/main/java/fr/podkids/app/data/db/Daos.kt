@@ -13,6 +13,16 @@ abstract class PodcastDao {
     @Query("SELECT * FROM podcasts WHERE subscribed = 1 ORDER BY title COLLATE NOCASE")
     abstract fun observeSubscribed(): Flow<List<PodcastEntity>>
 
+    /** Podcasts ayant au moins un épisode téléchargé. */
+    @Query(
+        """
+        SELECT * FROM podcasts
+        WHERE id IN (SELECT podcastId FROM episodes WHERE downloadState = 'DOWNLOADED')
+        ORDER BY title COLLATE NOCASE
+        """,
+    )
+    abstract fun observeWithDownloads(): Flow<List<PodcastEntity>>
+
     @Query("SELECT * FROM podcasts WHERE id = :id")
     abstract fun observe(id: Long): Flow<PodcastEntity?>
 
@@ -159,6 +169,29 @@ abstract class QueueDao {
     )
     abstract suspend fun load(): List<EpisodeWithPodcast>
 
+    /** Positions des épisodes renvoyés par [load], dans le même ordre. */
+    @Query(
+        """
+        SELECT q.position
+        FROM queue q
+        INNER JOIN episodes e ON e.id = q.episodeId
+        INNER JOIN podcasts p ON p.id = e.podcastId
+        ORDER BY q.position
+        """,
+    )
+    abstract suspend fun loadPositions(): List<Int>
+
+    /**
+     * Charge la liste de lecture et l'index de l'épisode en cours. Les épisodes déjà écoutés
+     * (historique) ont une position négative, l'épisode en cours la position 0.
+     */
+    @Transaction
+    open suspend fun loadWithCurrentIndex(): Pair<List<EpisodeWithPodcast>, Int> {
+        val episodes = load()
+        val historyCount = loadPositions().count { it < 0 }
+        return episodes to historyCount.coerceAtMost((episodes.size - 1).coerceAtLeast(0))
+    }
+
     @Query("DELETE FROM queue")
     abstract suspend fun clear()
 
@@ -166,8 +199,8 @@ abstract class QueueDao {
     abstract suspend fun insertAll(items: List<QueueItemEntity>)
 
     @Transaction
-    open suspend fun replace(episodeIds: List<Long>) {
+    open suspend fun replace(episodeIds: List<Long>, currentIndex: Int) {
         clear()
-        insertAll(episodeIds.mapIndexed { index, id -> QueueItemEntity(position = index, episodeId = id) })
+        insertAll(episodeIds.mapIndexed { index, id -> QueueItemEntity(position = index - currentIndex, episodeId = id) })
     }
 }

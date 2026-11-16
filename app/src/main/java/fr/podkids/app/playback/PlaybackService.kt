@@ -20,6 +20,7 @@ import fr.podkids.app.AppContainer
 import fr.podkids.app.MainActivity
 import fr.podkids.app.PodkidsApp
 import fr.podkids.app.data.Http
+import fr.podkids.app.data.db.EpisodeWithPodcast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -33,8 +34,9 @@ import kotlinx.coroutines.launch
  * Service de lecture audio (Media3). Il porte le lecteur ExoPlayer et la session média,
  * ce qui fournit la lecture en arrière-plan, la notification et les commandes de l'écran verrouillé.
  *
- * Convention : la liste de lecture du lecteur contient l'épisode en cours (index 0) suivi de la file
- * d'attente. Les épisodes déjà passés sont retirés au fur et à mesure.
+ * Convention : la liste de lecture du lecteur contient les derniers épisodes écoutés (historique,
+ * pour le bouton « épisode précédent »), l'épisode en cours, puis la file d'attente. L'historique est
+ * limité à [MAX_HISTORY] épisodes.
  */
 @OptIn(UnstableApi::class)
 class PlaybackService : MediaSessionService() {
@@ -114,10 +116,10 @@ class PlaybackService : MediaSessionService() {
     }
 
     private suspend fun restoreQueue() {
-        val saved = runCatching { container.repository.loadQueue() }.getOrDefault(emptyList())
+        val (saved, currentIndex) = runCatching { container.repository.loadQueue() }.getOrDefault(emptyList<EpisodeWithPodcast>() to 0)
         // Si une lecture a déjà été demandée entre-temps, elle est prioritaire.
         if (saved.isNotEmpty() && player.mediaItemCount == 0) {
-            player.setMediaItems(saved.map { it.toMediaItem() }, 0, saved.first().resumePositionMs)
+            player.setMediaItems(saved.map { it.toMediaItem() }, currentIndex, saved[currentIndex].resumePositionMs)
         }
         restored = true
     }
@@ -125,7 +127,8 @@ class PlaybackService : MediaSessionService() {
     private fun persistQueue() {
         if (!restored) return
         val ids = (0 until player.mediaItemCount).mapNotNull { player.getMediaItemAt(it).episodeId }
-        container.appScope.launch { container.repository.saveQueue(ids) }
+        val currentIndex = player.currentMediaItemIndex.coerceIn(0, (ids.size - 1).coerceAtLeast(0))
+        container.appScope.launch { container.repository.saveQueue(ids, currentIndex) }
     }
 
     private fun saveCurrentPosition() {
@@ -142,10 +145,10 @@ class PlaybackService : MediaSessionService() {
         container.appScope.launch { container.repository.markCompleted(episodeId) }
     }
 
-    /** Retire de la liste les épisodes situés avant l'épisode en cours. */
+    /** Ne conserve que les [MAX_HISTORY] derniers épisodes écoutés avant l'épisode en cours. */
     private fun trimPlayedItems() {
-        val index = player.currentMediaItemIndex
-        if (index > 0 && index < player.mediaItemCount) player.removeMediaItems(0, index)
+        val excess = player.currentMediaItemIndex - MAX_HISTORY
+        if (excess > 0 && player.currentMediaItemIndex < player.mediaItemCount) player.removeMediaItems(0, excess)
     }
 
     private val playerListener = object : Player.Listener {
@@ -166,6 +169,8 @@ class PlaybackService : MediaSessionService() {
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             trimPlayedItems()
+            // L'index de l'épisode en cours change : on l'enregistre avec la liste.
+            persistQueue()
         }
 
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
@@ -208,5 +213,6 @@ class PlaybackService : MediaSessionService() {
         const val SEEK_BACK_MS = 10_000L
         const val SEEK_FORWARD_MS = 30_000L
         private const val POSITION_SAVE_INTERVAL_MS = 5_000L
+        private const val MAX_HISTORY = 20
     }
 }

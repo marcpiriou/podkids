@@ -19,6 +19,8 @@
     <string name="nothing_playing">Rien en lecture pour l’instant</string>
     <string name="nothing_playing_hint">Choisis un épisode dans le catalogue ou dans tes podcasts pour l’écouter ici.</string>
     <string name="open_catalog">Ouvrir le catalogue</string>
+    <string name="library_empty_no_catalog">Pas encore de podcast. Demande à un adulte d’en ajouter !</string>
+    <string name="library_empty_downloaded_only">Aucun épisode téléchargé pour l’instant.</string>
     <string name="library_empty">Tu n’as pas encore de podcast. Ouvre le catalogue pour en ajouter !</string>
 
     <!-- Catalogue -->
@@ -70,6 +72,7 @@
     <string name="added_to_queue">Ajouté à la file d’attente</string>
     <string name="already_in_queue">Cet épisode est déjà dans la file d’attente</string>
     <string name="refresh_failed">Impossible d’actualiser ce podcast</string>
+    <string name="no_downloaded_episode">Aucun épisode téléchargé pour ce podcast.</string>
     <string name="episode_listened">Écouté</string>
     <string name="sort_oldest_first">Du plus ancien au plus récent</string>
     <string name="sort_newest_first">Du plus récent au plus ancien</string>
@@ -80,6 +83,7 @@
     <string name="play">Lire</string>
     <string name="pause">Mettre en pause</string>
     <string name="next_episode">Épisode suivant</string>
+    <string name="previous_episode">Épisode précédent</string>
     <string name="seek_back">Reculer de 10 secondes</string>
     <string name="seek_forward">Avancer de 30 secondes</string>
     <string name="open_player">Ouvrir le lecteur</string>
@@ -108,6 +112,11 @@
     <string name="setting_tile_size">Taille des pochettes</string>
     <string name="tile_size_small">Petites</string>
     <string name="tile_size_large">Grandes</string>
+    <string name="setting_children_access">Accès des enfants</string>
+    <string name="setting_hide_catalog">Masquer le catalogue de l’accueil</string>
+    <string name="setting_hide_catalog_description">Le catalogue ne s’ouvre plus que depuis ce bouton des réglages.</string>
+    <string name="setting_downloaded_only">Épisodes téléchargés uniquement</string>
+    <string name="setting_downloaded_only_description">Seuls les épisodes téléchargés sont affichés, sans les boutons de téléchargement ni de suppression.</string>
     <string name="setting_episode_order">Ordre des épisodes</string>
     <string name="episode_order_oldest_first">Du plus ancien</string>
     <string name="episode_order_newest_first">Du plus récent</string>

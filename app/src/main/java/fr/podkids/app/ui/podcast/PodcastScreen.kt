@@ -75,6 +75,11 @@ import fr.podkids.app.ui.components.formatDuration
 fun PodcastScreen(
     podcast: PodcastEntity?,
     episodes: List<EpisodeEntity>,
+    /**
+     * Mode « téléchargés uniquement » : la liste ne contient que les épisodes téléchargés et les
+     * actions de gestion (ajout, retrait, téléchargements) sont masquées.
+     */
+    downloadedOnly: Boolean,
     refreshing: Boolean,
     order: EpisodeOrder,
     onToggleOrder: () -> Unit,
@@ -160,6 +165,7 @@ fun PodcastScreen(
         ) {
             item(key = "header") {
                 PodcastHeader(
+                    showActions = !downloadedOnly,
                     order = order,
                     podcast = podcast,
                     episodeCount = episodes.size,
@@ -167,6 +173,16 @@ fun PodcastScreen(
                     onRemove = { confirmRemove = true },
                     onDownloadAll = { confirmDownloadAll = true },
                 )
+            }
+            if (downloadedOnly && episodes.isEmpty()) {
+                item(key = "empty") {
+                    Text(
+                        text = stringResource(R.string.no_downloaded_episode),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
+                    )
+                }
             }
             items(episodes, key = { it.id }) { episode ->
                 EpisodeRow(
@@ -178,6 +194,7 @@ fun PodcastScreen(
                     onDownload = { onDownload(episode.id) },
                     onCancelDownload = { onRemoveDownload(episode.id) },
                     onDeleteDownload = { confirmDeleteDownload = episode.id },
+                    showDownloadButton = !downloadedOnly,
                 )
                 HorizontalDivider(
                     color = MaterialTheme.colorScheme.outlineVariant,
@@ -237,6 +254,7 @@ fun PodcastScreen(
 
 @Composable
 private fun PodcastHeader(
+    showActions: Boolean,
     order: EpisodeOrder,
     podcast: PodcastEntity,
     episodeCount: Int,
@@ -280,25 +298,27 @@ private fun PodcastHeader(
                 )
             }
         }
-        Spacer(Modifier.height(12.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-            if (podcast.subscribed) {
-                FilledTonalButton(onClick = onRemove, modifier = Modifier.weight(1f)) {
-                    Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(20.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text(stringResource(R.string.in_my_podcasts), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        if (showActions) {
+            Spacer(Modifier.height(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                if (podcast.subscribed) {
+                    FilledTonalButton(onClick = onRemove, modifier = Modifier.weight(1f)) {
+                        Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(20.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text(stringResource(R.string.in_my_podcasts), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
+                } else {
+                    Button(onClick = onSubscribe, modifier = Modifier.weight(1f)) {
+                        Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text(stringResource(R.string.add_to_my_podcasts), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
                 }
-            } else {
-                Button(onClick = onSubscribe, modifier = Modifier.weight(1f)) {
-                    Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+                FilledTonalButton(onClick = onDownloadAll, modifier = Modifier.weight(1f)) {
+                    Icon(Icons.Rounded.Download, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(6.dp))
-                    Text(stringResource(R.string.add_to_my_podcasts), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(stringResource(R.string.download_all), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
-            }
-            FilledTonalButton(onClick = onDownloadAll, modifier = Modifier.weight(1f)) {
-                Icon(Icons.Rounded.Download, contentDescription = null, modifier = Modifier.size(20.dp))
-                Spacer(Modifier.width(6.dp))
-                Text(stringResource(R.string.download_all), maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
         if (podcast.description.isNotBlank()) {
@@ -328,6 +348,7 @@ private fun EpisodeRow(
     onDownload: () -> Unit,
     onCancelDownload: () -> Unit,
     onDeleteDownload: () -> Unit,
+    showDownloadButton: Boolean,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -376,13 +397,15 @@ private fun EpisodeRow(
                 contentDescription = stringResource(R.string.add_to_queue),
             )
         }
-        DownloadButton(
-            state = episode.downloadState,
-            progress = episode.downloadProgress,
-            onDownload = onDownload,
-            onCancel = onCancelDownload,
-            onDelete = onDeleteDownload,
-        )
+        if (showDownloadButton) {
+            DownloadButton(
+                state = episode.downloadState,
+                progress = episode.downloadProgress,
+                onDownload = onDownload,
+                onCancel = onCancelDownload,
+                onDelete = onDeleteDownload,
+            )
+        }
     }
 }
 

@@ -38,6 +38,8 @@ data class PlayerUiState(
     val current: QueueEntry? = null,
     /** Épisodes à suivre, dans l'ordre de lecture (sans l'épisode en cours). */
     val upcoming: List<QueueEntry> = emptyList(),
+    /** Un épisode précédent (déjà écouté) est disponible. */
+    val hasPrevious: Boolean = false,
     /** true dès que la lecture est demandée, même pendant la mise en mémoire tampon. */
     val isPlaying: Boolean = false,
     val isBuffering: Boolean = false,
@@ -122,8 +124,8 @@ class PlayerConnection(private val context: Context) {
             existingIndex == currentIndex -> Unit
             else -> {
                 // L'épisode est placé juste après l'épisode en cours, puis on saute dessus :
-                // le service retire alors l'ancien épisode de la liste.
-                val target = currentIndex + 1
+                // l'ancien épisode rejoint ainsi l'historique (bouton « épisode précédent »).
+                val target = if (existingIndex in 0 until currentIndex) currentIndex else currentIndex + 1
                 if (existingIndex >= 0) {
                     player.moveMediaItem(existingIndex, target)
                 } else {
@@ -209,6 +211,16 @@ class PlayerConnection(private val context: Context) {
         publishProgress()
     }
 
+    /** Revient à l'épisode écouté juste avant, depuis le début. */
+    fun skipToPrevious() {
+        val player = controller ?: return
+        if (player.hasPreviousMediaItem()) {
+            player.seekToPreviousMediaItem()
+            player.prepare()
+            player.play()
+        }
+    }
+
     fun skipToNext() {
         val player = controller ?: return
         if (player.hasNextMediaItem()) {
@@ -229,6 +241,7 @@ class PlayerConnection(private val context: Context) {
             connected = true,
             current = entries.getOrNull(currentIndex),
             upcoming = if (currentIndex + 1 < entries.size) entries.subList(currentIndex + 1, entries.size) else emptyList(),
+            hasPrevious = currentIndex > 0 && currentIndex < entries.size,
             isPlaying = player.playWhenReady && active,
             isBuffering = player.playWhenReady && player.playbackState == Player.STATE_BUFFERING,
         )

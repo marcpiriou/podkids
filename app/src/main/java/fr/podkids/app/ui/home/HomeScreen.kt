@@ -51,7 +51,8 @@ import fr.podkids.app.data.settings.UiSettings
 import fr.podkids.app.ui.components.Artwork
 
 /**
- * Accueil : les podcasts de l'enfant, suivis de la carte d'accès au catalogue, qui défile avec la liste.
+ * Accueil : les podcasts de l'enfant, suivis de la carte d'accès au catalogue, qui défile avec la liste
+ * (sauf si le catalogue est réservé aux réglages).
  * La lecture en cours n'apparaît que dans le mini-lecteur, en bas de l'écran.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,7 +100,13 @@ fun HomeScreen(
             if (library != null && library.isEmpty()) {
                 item(key = "empty", span = { GridItemSpan(maxLineSpan) }) {
                     Text(
-                        text = stringResource(R.string.library_empty),
+                        text = stringResource(
+                            when {
+                                settings.downloadedOnly -> R.string.library_empty_downloaded_only
+                                settings.hideCatalogOnHome -> R.string.library_empty_no_catalog
+                                else -> R.string.library_empty
+                            },
+                        ),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
@@ -116,8 +123,9 @@ fun HomeScreen(
                     onClick = { onOpenPodcast(podcast.id) },
                 )
             }
-            // Le catalogue vient après les podcasts de l'enfant et défile avec eux.
-            if (library != null) {
+            // Le catalogue vient après les podcasts de l'enfant et défile avec eux,
+            // sauf s'il est réservé aux réglages.
+            if (library != null && !settings.hideCatalogOnHome) {
                 item(key = "catalog", span = { GridItemSpan(maxLineSpan) }) {
                     CatalogCard(onClick = onOpenCatalog)
                 }
