@@ -19,19 +19,12 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.podkids.app.data.settings.DarkMode
-import fr.podkids.app.data.settings.ThemeColor
 import fr.podkids.app.data.settings.UiSettings
 
 /** Couleurs de base d'un thème ; le reste de la palette Material 3 en est dérivé. */
 data class Palette(val primary: Color, val secondary: Color, val tertiary: Color)
 
-fun ThemeColor.palette(): Palette = when (this) {
-    ThemeColor.OCEAN -> Palette(Color(0xFF1565C0), Color(0xFF00838F), Color(0xFFEF6C00))
-    ThemeColor.FOREST -> Palette(Color(0xFF2E7D32), Color(0xFF558B2F), Color(0xFFAD1457))
-    ThemeColor.STRAWBERRY -> Palette(Color(0xFFC2185B), Color(0xFF8E24AA), Color(0xFF00838F))
-    ThemeColor.SUN -> Palette(Color(0xFFD84315), Color(0xFFB26A00), Color(0xFF1565C0))
-    ThemeColor.GALAXY -> Palette(Color(0xFF5E35B1), Color(0xFF3949AB), Color(0xFFD81B60))
-}
+private val OceanPalette = Palette(Color(0xFF1565C0), Color(0xFF00838F), Color(0xFFEF6C00))
 
 private fun lightScheme(p: Palette): ColorScheme {
     val white = Color.White
@@ -127,15 +120,11 @@ fun PodkidsTheme(settings: UiSettings, content: @Composable () -> Unit) {
         DarkMode.LIGHT -> false
         DarkMode.DARK -> true
     }
-    val palette = settings.themeColor.palette()
+    val palette = OceanPalette
     val colors = if (dark) darkScheme(palette) else lightScheme(palette)
 
-    // La taille du texte choisie dans les réglages s'ajoute à celle du système.
-    val density = LocalDensity.current
-    val scaledDensity = Density(density.density, density.fontScale * settings.textSize.scale)
-
     MaterialTheme(colorScheme = colors, shapes = PodkidsShapes, typography = PodkidsTypography) {
-        CompositionLocalProvider(LocalDensity provides scaledDensity, content = content)
+        content()
     }
 }
 

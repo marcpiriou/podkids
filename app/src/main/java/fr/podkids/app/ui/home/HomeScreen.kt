@@ -52,6 +52,9 @@ import fr.podkids.app.data.db.PodcastEntity
 import fr.podkids.app.data.settings.UiSettings
 import fr.podkids.app.ui.components.Artwork
 
+/** Largeur minimale d'une pochette dans les grilles (accueil et catalogue). */
+val TILE_MIN_WIDTH = 150.dp
+
 /**
  * Accueil : les podcasts de l'enfant, suivis de la carte d'accès au catalogue, qui défile avec la liste
  * (sauf si le catalogue est réservé aux réglages).
@@ -105,7 +108,7 @@ fun HomeScreen(
         },
     ) { padding ->
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = settings.tileSize.minWidthDp.dp),
+            columns = GridCells.Adaptive(minSize = TILE_MIN_WIDTH),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),

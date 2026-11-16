@@ -91,23 +91,10 @@
     <string name="queue_remove">Retirer de la file d’attente</string>
 
     <!-- Réglages -->
-    <string name="setting_color">Couleur</string>
-    <string name="color_ocean">Océan</string>
-    <string name="color_forest">Forêt</string>
-    <string name="color_strawberry">Fraise</string>
-    <string name="color_sun">Soleil</string>
-    <string name="color_galaxy">Galaxie</string>
     <string name="setting_appearance">Apparence</string>
     <string name="appearance_system">Automatique</string>
     <string name="appearance_light">Clair</string>
     <string name="appearance_dark">Sombre</string>
-    <string name="setting_text_size">Taille du texte</string>
-    <string name="text_size_normal">Normale</string>
-    <string name="text_size_large">Grande</string>
-    <string name="text_size_xlarge">Très grande</string>
-    <string name="setting_tile_size">Taille des pochettes</string>
-    <string name="tile_size_small">Petites</string>
-    <string name="tile_size_large">Grandes</string>
     <string name="setting_lock">Verrouillage des réglages</string>
     <string name="setting_lock_off">Les réglages sont accessibles à tous. Définis un mot de passe pour les protéger.</string>
     <string name="setting_lock_on">En mode enfant, le mot de passe est demandé pour ouvrir les réglages et pour passer en mode adulte.</string>
@@ -136,8 +123,8 @@
     <string name="setting_hide_catalog_description">En mode enfant, le catalogue ne s’ouvre plus que depuis ce bouton des réglages.</string>
     <string name="setting_downloaded_only">Épisodes téléchargés uniquement</string>
     <string name="setting_downloaded_only_description">En mode enfant, seuls les épisodes téléchargés sont affichés, sans les boutons de téléchargement ni de suppression.</string>
-    <string name="setting_episode_order">Ordre des épisodes</string>
-    <string name="episode_order_oldest_first">Du plus ancien</string>
-    <string name="episode_order_newest_first">Du plus récent</string>
+    <string name="setting_episode_order">Ordre des épisodes par défaut</string>
+    <string name="episode_order_oldest_first">Anciens d’abord</string>
+    <string name="episode_order_newest_first">Récents d’abord</string>
     <string name="about_version">Podkids version %1$s</string>
 </resources>

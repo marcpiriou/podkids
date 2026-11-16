@@ -19,8 +19,9 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
   sont conservées d'un lancement à l'autre.
 - **Mini-lecteur** : toujours visible en bas de l'écran dès qu'un épisode est chargé, avec la pochette à gauche
   et un bouton lecture / pause.
-- **Réglages** (bouton en haut à gauche de l'accueil) : couleur du thème, apparence
-  claire / sombre / automatique, taille du texte, taille des pochettes, ordre des épisodes par défaut.
+- **Réglages** (bouton en haut à gauche de l'accueil) : ordre des épisodes par défaut
+  (anciens d'abord ou récents d'abord), mode enfant, verrouillage par mot de passe et, tout en bas,
+  apparence claire / sombre / automatique.
 - **Mode enfant / mode adulte** : une icône en haut à droite de l'accueil bascule entre les deux modes. En
   mode enfant, les réglages de la carte « Mode enfant » s'appliquent : masquer le catalogue de l'accueil (il
   ne s'ouvre alors que par un bouton des réglages) et n'afficher que les épisodes téléchargés (sans boutons

@@ -181,7 +181,6 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                 }
                 CatalogScreen(
                     state = state,
-                    settings = settings,
                     onBack = { navController.popBackStack() },
                     onQueryChange = viewModel::onQueryChange,
                     onToggleAge = viewModel::toggleAge,
@@ -233,10 +232,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     settings = settings,
                     versionName = BuildConfig.VERSION_NAME,
                     onBack = { navController.popBackStack() },
-                    onThemeColorChange = { scope.launch { repository.setThemeColor(it) } },
                     onDarkModeChange = { scope.launch { repository.setDarkMode(it) } },
-                    onTextSizeChange = { scope.launch { repository.setTextSize(it) } },
-                    onTileSizeChange = { scope.launch { repository.setTileSize(it) } },
                     onEpisodeOrderChange = { scope.launch { repository.setEpisodeOrder(it) } },
                     onHideCatalogOnHomeChange = { scope.launch { repository.setHideCatalogOnHome(it) } },
                     onDownloadedOnlyChange = { scope.launch { repository.setDownloadedOnly(it) } },

@@ -56,14 +56,13 @@ import androidx.compose.ui.unit.dp
 import fr.podkids.app.R
 import fr.podkids.app.data.catalog.Catalog
 import fr.podkids.app.data.catalog.CatalogPodcast
-import fr.podkids.app.data.settings.UiSettings
 import fr.podkids.app.ui.home.PodcastTile
+import fr.podkids.app.ui.home.TILE_MIN_WIDTH
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogScreen(
     state: CatalogUiState,
-    settings: UiSettings,
     onBack: () -> Unit,
     onQueryChange: (String) -> Unit,
     onToggleAge: (Int) -> Unit,
@@ -136,7 +135,7 @@ fun CatalogScreen(
                             .padding(32.dp),
                     )
                     else -> LazyVerticalGrid(
-                        columns = GridCells.Adaptive(minSize = settings.tileSize.minWidthDp.dp),
+                        columns = GridCells.Adaptive(minSize = TILE_MIN_WIDTH),
                         // Marge basse pour que le bouton flottant ne masque pas la dernière ligne.
                         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 96.dp),
                         horizontalArrangement = Arrangement.spacedBy(14.dp),
