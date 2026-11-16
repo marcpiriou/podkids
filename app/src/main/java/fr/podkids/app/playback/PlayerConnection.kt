@@ -38,8 +38,6 @@ data class PlayerUiState(
     val current: QueueEntry? = null,
     /** Épisodes à suivre, dans l'ordre de lecture (sans l'épisode en cours). */
     val upcoming: List<QueueEntry> = emptyList(),
-    /** Un épisode précédent (déjà écouté) est disponible. */
-    val hasPrevious: Boolean = false,
     /** true dès que la lecture est demandée, même pendant la mise en mémoire tampon. */
     val isPlaying: Boolean = false,
     val isBuffering: Boolean = false,
@@ -196,39 +194,14 @@ class PlayerConnection(private val context: Context) {
         player.play()
     }
 
-    fun seekBack() {
-        controller?.seekBack()
-        publishProgress()
-    }
 
-    fun seekForward() {
-        controller?.seekForward()
-        publishProgress()
-    }
 
     fun seekTo(positionMs: Long) {
         controller?.seekTo(positionMs)
         publishProgress()
     }
 
-    /** Revient à l'épisode écouté juste avant, depuis le début. */
-    fun skipToPrevious() {
-        val player = controller ?: return
-        if (player.hasPreviousMediaItem()) {
-            player.seekToPreviousMediaItem()
-            player.prepare()
-            player.play()
-        }
-    }
 
-    fun skipToNext() {
-        val player = controller ?: return
-        if (player.hasNextMediaItem()) {
-            player.seekToNextMediaItem()
-            player.prepare()
-            player.play()
-        }
-    }
 
     private fun indexOf(player: Player, mediaId: String): Int =
         (0 until player.mediaItemCount).firstOrNull { player.getMediaItemAt(it).mediaId == mediaId } ?: -1
@@ -241,7 +214,6 @@ class PlayerConnection(private val context: Context) {
             connected = true,
             current = entries.getOrNull(currentIndex),
             upcoming = if (currentIndex + 1 < entries.size) entries.subList(currentIndex + 1, entries.size) else emptyList(),
-            hasPrevious = currentIndex > 0 && currentIndex < entries.size,
             isPlaying = player.playWhenReady && active,
             isBuffering = player.playWhenReady && player.playbackState == Player.STATE_BUFFERING,
         )

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,13 +22,9 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Explore
-import androidx.compose.material.icons.rounded.Forward30
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.Replay10
-import androidx.compose.material.icons.rounded.SkipNext
-import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,7 +45,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -74,11 +68,7 @@ fun PlayerScreen(
     /** null : pas de bouton vers le catalogue (catalogue réservé aux réglages). */
     onOpenCatalog: (() -> Unit)?,
     onTogglePlay: () -> Unit,
-    onSeekBack: () -> Unit,
-    onSeekForward: () -> Unit,
     onSeekTo: (Long) -> Unit,
-    onSkipPrevious: () -> Unit,
-    onSkipNext: () -> Unit,
     onPlayUpcoming: (Int) -> Unit,
     onMoveUpcomingUp: (Int) -> Unit,
     onRemoveUpcoming: (Int) -> Unit,
@@ -114,11 +104,7 @@ fun PlayerScreen(
                     state = state,
                     progress = progress,
                     onTogglePlay = onTogglePlay,
-                    onSeekBack = onSeekBack,
-                    onSeekForward = onSeekForward,
                     onSeekTo = onSeekTo,
-                    onSkipPrevious = onSkipPrevious,
-                    onSkipNext = onSkipNext,
                 )
             }
             item(key = "queue-header") {
@@ -169,11 +155,7 @@ private fun NowPlaying(
     state: PlayerUiState,
     progress: StateFlow<PlaybackProgress>,
     onTogglePlay: () -> Unit,
-    onSeekBack: () -> Unit,
-    onSeekForward: () -> Unit,
     onSeekTo: (Long) -> Unit,
-    onSkipPrevious: () -> Unit,
-    onSkipNext: () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -207,63 +189,22 @@ private fun NowPlaying(
         )
         Spacer(Modifier.height(8.dp))
         SeekBar(progress = progress, onSeekTo = onSeekTo)
-        // Cinq commandes de largeur égale : précédent, -10 s, lecture, +30 s, suivant.
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            ControlButton(
-                icon = Icons.Rounded.SkipPrevious,
-                description = stringResource(R.string.previous_episode),
-                enabled = state.hasPrevious,
-                onClick = onSkipPrevious,
-            )
-            ControlButton(
-                icon = Icons.Rounded.Replay10,
-                description = stringResource(R.string.seek_back),
-                onClick = onSeekBack,
-            )
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.weight(1.4f)) {
-                FilledIconButton(onClick = onTogglePlay, modifier = Modifier.size(80.dp)) {
-                    Icon(
-                        imageVector = if (state.isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-                        contentDescription = stringResource(if (state.isPlaying) R.string.pause else R.string.play),
-                        modifier = Modifier.size(52.dp),
-                    )
-                }
-                if (state.isBuffering) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.tertiary,
-                        strokeWidth = 4.dp,
-                        modifier = Modifier.size(92.dp),
-                    )
-                }
+        // Une seule commande, volontairement : lecture / pause.
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+            FilledIconButton(onClick = onTogglePlay, modifier = Modifier.size(96.dp)) {
+                Icon(
+                    imageVector = if (state.isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                    contentDescription = stringResource(if (state.isPlaying) R.string.pause else R.string.play),
+                    modifier = Modifier.size(60.dp),
+                )
             }
-            ControlButton(
-                icon = Icons.Rounded.Forward30,
-                description = stringResource(R.string.seek_forward),
-                onClick = onSeekForward,
-            )
-            ControlButton(
-                icon = Icons.Rounded.SkipNext,
-                description = stringResource(R.string.next_episode),
-                enabled = state.upcoming.isNotEmpty(),
-                onClick = onSkipNext,
-            )
-        }
-    }
-}
-
-@Composable
-private fun RowScope.ControlButton(
-    icon: ImageVector,
-    description: String,
-    onClick: () -> Unit,
-    enabled: Boolean = true,
-) {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.weight(1f)) {
-        IconButton(onClick = onClick, enabled = enabled, modifier = Modifier.size(56.dp)) {
-            Icon(icon, contentDescription = description, modifier = Modifier.size(38.dp))
+            if (state.isBuffering) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.tertiary,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(108.dp),
+                )
+            }
         }
     }
 }

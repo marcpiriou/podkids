@@ -29,8 +29,10 @@ import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Explore
 import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -43,6 +45,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +59,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.podkids.app.R
+import fr.podkids.app.ui.components.SetPasswordDialog
 import fr.podkids.app.data.settings.DarkMode
 import fr.podkids.app.data.settings.EpisodeOrder
 import fr.podkids.app.data.settings.TextSize
@@ -76,6 +83,8 @@ fun SettingsScreen(
     onHideCatalogOnHomeChange: (Boolean) -> Unit,
     onDownloadedOnlyChange: (Boolean) -> Unit,
     onOpenCatalog: () -> Unit,
+    onSetPassword: (String) -> Unit,
+    onClearPassword: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -138,6 +147,43 @@ fun SettingsScreen(
                     label = { stringResource(it.labelRes()) },
                     onSelect = onTileSizeChange,
                 )
+            }
+
+            SettingCard(icon = Icons.Rounded.Lock, title = stringResource(R.string.setting_lock)) {
+                var showSetPassword by rememberSaveable { mutableStateOf(false) }
+                Text(
+                    text = stringResource(
+                        if (settings.settingsLocked) R.string.setting_lock_on else R.string.setting_lock_off,
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(8.dp))
+                if (settings.settingsLocked) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        OutlinedButton(onClick = { showSetPassword = true }, modifier = Modifier.weight(1f)) {
+                            Text(stringResource(R.string.password_change), maxLines = 1)
+                        }
+                        OutlinedButton(onClick = onClearPassword, modifier = Modifier.weight(1f)) {
+                            Text(stringResource(R.string.password_remove), maxLines = 1)
+                        }
+                    }
+                } else {
+                    Button(onClick = { showSetPassword = true }, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Rounded.Lock, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.password_set))
+                    }
+                }
+                if (showSetPassword) {
+                    SetPasswordDialog(
+                        onConfirm = {
+                            showSetPassword = false
+                            onSetPassword(it)
+                        },
+                        onDismiss = { showSetPassword = false },
+                    )
+                }
             }
 
             SettingCard(icon = Icons.Rounded.Shield, title = stringResource(R.string.setting_children_access)) {

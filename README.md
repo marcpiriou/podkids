@@ -14,15 +14,19 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
   réglages.
 - **Téléchargement** : épisode par épisode ou tous les épisodes d'un podcast, pour l'écoute hors connexion.
   Un épisode téléchargé est lu depuis le fichier local.
-- **Lecture en cours et file d'attente** : lecteur complet (épisode précédent, −10 s, pause, +30 s, épisode suivant, curseur
+- **Lecture en cours et file d'attente** : lecteur volontairement simple (lecture / pause et curseur
   de position) et file d'attente (ajout, réorganisation, suppression). La file et la position d'écoute
   sont conservées d'un lancement à l'autre.
-- **Mini-lecteur** : toujours visible en bas de l'écran dès qu'un épisode est chargé, avec la pochette à gauche.
+- **Mini-lecteur** : toujours visible en bas de l'écran dès qu'un épisode est chargé, avec la pochette à gauche
+  et un bouton lecture / pause.
 - **Réglages** (bouton en haut à gauche de l'accueil) : couleur du thème, apparence
   claire / sombre / automatique, taille du texte, taille des pochettes, ordre des épisodes par défaut.
 - **Accès des enfants** (dans les réglages) : masquer le catalogue de l'accueil (il ne s'ouvre alors que par
   un bouton des réglages) et n'afficher que les épisodes téléchargés (sans boutons de téléchargement ni de
   suppression).
+- **Verrouillage des réglages** : un mot de passe, défini dans les réglages, est demandé pour les ouvrir.
+  Seule une empreinte salée est enregistrée. En cas d'oubli, effacer les données de l'application dans les
+  paramètres d'Android.
 
 ## Catalogue et contenus
 

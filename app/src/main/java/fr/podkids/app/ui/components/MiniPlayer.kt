@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,7 +33,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Mini-lecteur affiché en bas de tous les écrans dès qu'un épisode est chargé :
- * pochette à gauche, titre, lecture/pause et épisode suivant. Un appui ouvre le lecteur complet.
+ * pochette à gauche, titre et lecture/pause. Un appui ouvre le lecteur complet.
  */
 @Composable
 fun MiniPlayer(
@@ -43,7 +41,6 @@ fun MiniPlayer(
     progress: StateFlow<PlaybackProgress>,
     onOpenPlayer: () -> Unit,
     onTogglePlay: () -> Unit,
-    onSkipNext: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val current = state.current ?: return
@@ -86,15 +83,6 @@ fun MiniPlayer(
                         contentDescription = stringResource(if (state.isPlaying) R.string.pause else R.string.play),
                         modifier = Modifier.size(30.dp),
                     )
-                }
-                if (state.upcoming.isNotEmpty()) {
-                    IconButton(onClick = onSkipNext, modifier = Modifier.size(48.dp)) {
-                        Icon(
-                            imageVector = Icons.Rounded.SkipNext,
-                            contentDescription = stringResource(R.string.next_episode),
-                            modifier = Modifier.size(30.dp),
-                        )
-                    }
                 }
             }
         }

@@ -82,10 +82,6 @@
     <!-- Lecteur -->
     <string name="play">Lire</string>
     <string name="pause">Mettre en pause</string>
-    <string name="next_episode">Épisode suivant</string>
-    <string name="previous_episode">Épisode précédent</string>
-    <string name="seek_back">Reculer de 10 secondes</string>
-    <string name="seek_forward">Avancer de 30 secondes</string>
     <string name="open_player">Ouvrir le lecteur</string>
     <string name="playback_error">Impossible de lire cet épisode. Vérifie la connexion Internet.</string>
     <string name="queue">File d’attente</string>
@@ -112,6 +108,23 @@
     <string name="setting_tile_size">Taille des pochettes</string>
     <string name="tile_size_small">Petites</string>
     <string name="tile_size_large">Grandes</string>
+    <string name="setting_lock">Verrouillage des réglages</string>
+    <string name="setting_lock_off">Les réglages sont accessibles à tous. Définis un mot de passe pour les protéger.</string>
+    <string name="setting_lock_on">Les réglages sont protégés : le mot de passe est demandé pour les ouvrir.</string>
+    <string name="password_set">Définir un mot de passe</string>
+    <string name="password_change">Modifier</string>
+    <string name="password_remove">Supprimer</string>
+    <string name="set_password_title">Mot de passe des réglages</string>
+    <string name="set_password_explanation">Il sera demandé pour ouvrir les réglages. Au moins %1$d caractères.</string>
+    <string name="password_label">Mot de passe</string>
+    <string name="password_confirm_label">Confirmer le mot de passe</string>
+    <string name="password_too_short">Au moins %1$d caractères.</string>
+    <string name="password_mismatch">Les deux mots de passe ne correspondent pas.</string>
+    <string name="unlock_title">Réglages protégés</string>
+    <string name="unlock_explanation">Saisis le mot de passe pour ouvrir les réglages.</string>
+    <string name="unlock_action">Ouvrir</string>
+    <string name="password_wrong">Mot de passe incorrect.</string>
+    <string name="password_forgotten_hint">Mot de passe oublié : effacer les données de Podkids dans les paramètres d’Android (les podcasts ajoutés seront aussi effacés).</string>
     <string name="setting_children_access">Accès des enfants</string>
     <string name="setting_hide_catalog">Masquer le catalogue de l’accueil</string>
     <string name="setting_hide_catalog_description">Le catalogue ne s’ouvre plus que depuis ce bouton des réglages.</string>

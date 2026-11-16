@@ -13,6 +13,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -38,6 +41,7 @@ import fr.podkids.app.playback.PlayerUiState
 import fr.podkids.app.ui.catalog.CatalogScreen
 import fr.podkids.app.ui.catalog.CatalogViewModel
 import fr.podkids.app.ui.components.MiniPlayer
+import fr.podkids.app.ui.components.UnlockSettingsDialog
 import fr.podkids.app.ui.home.HomeScreen
 import fr.podkids.app.ui.player.PlayerScreen
 import fr.podkids.app.ui.podcast.PodcastEvent
@@ -72,6 +76,19 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
         openPlayerRequests.collect { navController.openPlayer() }
     }
 
+    // Les réglages protégés par mot de passe ne s'ouvrent qu'après saisie de celui-ci.
+    var showUnlock by rememberSaveable { mutableStateOf(false) }
+    if (showUnlock) {
+        UnlockSettingsDialog(
+            checkPassword = container.settings::checkPassword,
+            onUnlocked = {
+                showUnlock = false
+                navController.navigate(Routes.SETTINGS) { launchSingleTop = true }
+            },
+            onDismiss = { showUnlock = false },
+        )
+    }
+
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     LaunchedEffect(player) {
@@ -96,7 +113,6 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     progress = player.progress,
                     onOpenPlayer = { navController.openPlayer() },
                     onTogglePlay = player::togglePlay,
-                    onSkipNext = player::skipToNext,
                 )
             }
         },
@@ -114,8 +130,12 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                 HomeScreen(
                     library = library,
                     settings = settings,
-                    onOpenSettings = { navController.navigate(Routes.SETTINGS) },
+                    onOpenSettings = {
+                        if (settings.settingsLocked) showUnlock = true else navController.navigate(Routes.SETTINGS)
+                    },
                     onOpenCatalog = { navController.navigate(Routes.CATALOG) },
+                    onSetPassword = { scope.launch { repository.setPassword(it) } },
+                    onClearPassword = { scope.launch { repository.clearPassword() } },
                     onOpenPodcast = { navController.navigate(Routes.podcast(it)) },
                 )
             }
@@ -169,11 +189,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                         { navController.navigate(Routes.CATALOG) { popUpTo(Routes.HOME) } }
                     },
                     onTogglePlay = player::togglePlay,
-                    onSeekBack = player::seekBack,
-                    onSeekForward = player::seekForward,
                     onSeekTo = player::seekTo,
-                    onSkipPrevious = player::skipToPrevious,
-                    onSkipNext = player::skipToNext,
                     onPlayUpcoming = player::playUpcoming,
                     onMoveUpcomingUp = player::moveUpcomingUp,
                     onRemoveUpcoming = player::removeUpcoming,

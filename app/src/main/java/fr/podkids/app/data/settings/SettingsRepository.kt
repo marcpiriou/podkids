@@ -7,8 +7,11 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 enum class ThemeColor { OCEAN, FOREST, STRAWBERRY, SUN, GALAXY }
 
@@ -33,6 +36,8 @@ data class UiSettings(
     val hideCatalogOnHome: Boolean = false,
     /** Seuls les épisodes téléchargés (et les podcasts qui en ont) sont affichés. */
     val downloadedOnly: Boolean = false,
+    /** Un mot de passe protège l'accès aux réglages. */
+    val settingsLocked: Boolean = false,
     /** Choix d'âge cochés dans le catalogue ; vide = tous les âges. */
     val catalogAges: Set<Int> = emptySet(),
 )
@@ -50,6 +55,7 @@ class SettingsRepository(private val context: Context) {
             episodeOrder = enumOrDefault(prefs[KEY_EPISODE_ORDER], EpisodeOrder.OLDEST_FIRST),
             hideCatalogOnHome = prefs[KEY_HIDE_CATALOG] ?: false,
             downloadedOnly = prefs[KEY_DOWNLOADED_ONLY] ?: false,
+            settingsLocked = !prefs[KEY_PASSWORD_HASH].isNullOrEmpty(),
             catalogAges = prefs[KEY_CATALOG_AGES].orEmpty()
                 .split(',')
                 .mapNotNull { it.trim().toIntOrNull() }
@@ -64,6 +70,32 @@ class SettingsRepository(private val context: Context) {
     suspend fun setEpisodeOrder(value: EpisodeOrder) = set(KEY_EPISODE_ORDER, value.name)
     suspend fun setHideCatalogOnHome(value: Boolean) = context.settingsDataStore.edit { it[KEY_HIDE_CATALOG] = value }
     suspend fun setDownloadedOnly(value: Boolean) = context.settingsDataStore.edit { it[KEY_DOWNLOADED_ONLY] = value }
+
+    /** Définit (ou remplace) le mot de passe des réglages. */
+    suspend fun setPassword(password: String) {
+        val salt = PasswordHasher.newSalt()
+        val hash = withContext(Dispatchers.Default) { PasswordHasher.hash(password, salt) }
+        context.settingsDataStore.edit {
+            it[KEY_PASSWORD_SALT] = salt
+            it[KEY_PASSWORD_HASH] = hash
+        }
+    }
+
+    suspend fun clearPassword() {
+        context.settingsDataStore.edit {
+            it.remove(KEY_PASSWORD_SALT)
+            it.remove(KEY_PASSWORD_HASH)
+        }
+    }
+
+    /** true si aucun mot de passe n'est défini ou si [password] est le bon. */
+    suspend fun checkPassword(password: String): Boolean {
+        val prefs = context.settingsDataStore.data.first()
+        val hash = prefs[KEY_PASSWORD_HASH]
+        if (hash.isNullOrEmpty()) return true
+        val salt = prefs[KEY_PASSWORD_SALT].orEmpty()
+        return withContext(Dispatchers.Default) { PasswordHasher.matches(password, salt, hash) }
+    }
     suspend fun setCatalogAges(ages: Set<Int>) = set(KEY_CATALOG_AGES, ages.sorted().joinToString(","))
 
     private suspend fun set(key: Preferences.Key<String>, value: String) {
@@ -81,6 +113,8 @@ class SettingsRepository(private val context: Context) {
         val KEY_EPISODE_ORDER = stringPreferencesKey("episode_order")
         val KEY_HIDE_CATALOG = booleanPreferencesKey("hide_catalog_on_home")
         val KEY_DOWNLOADED_ONLY = booleanPreferencesKey("downloaded_only")
+        val KEY_PASSWORD_HASH = stringPreferencesKey("settings_password_hash")
+        val KEY_PASSWORD_SALT = stringPreferencesKey("settings_password_salt")
         val KEY_CATALOG_AGES = stringPreferencesKey("catalog_ages")
     }
 }
