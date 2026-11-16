@@ -28,7 +28,7 @@ import androidx.compose.material.icons.rounded.FormatSize
 import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Explore
-import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.ChildCare
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -186,7 +186,13 @@ fun SettingsScreen(
                 }
             }
 
-            SettingCard(icon = Icons.Rounded.Shield, title = stringResource(R.string.setting_children_access)) {
+            SettingCard(icon = Icons.Rounded.ChildCare, title = stringResource(R.string.setting_children_access)) {
+                Text(
+                    text = stringResource(R.string.setting_child_mode_description),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(12.dp))
                 SwitchRow(
                     title = stringResource(R.string.setting_hide_catalog),
                     description = stringResource(R.string.setting_hide_catalog_description),

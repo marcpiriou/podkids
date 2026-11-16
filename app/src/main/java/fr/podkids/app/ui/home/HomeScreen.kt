@@ -21,8 +21,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChildCare
 import androidx.compose.material.icons.rounded.Explore
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.SupervisorAccount
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -62,6 +64,7 @@ fun HomeScreen(
     library: List<PodcastEntity>?,
     settings: UiSettings,
     onOpenSettings: () -> Unit,
+    onToggleMode: () -> Unit,
     onOpenCatalog: () -> Unit,
     onOpenPodcast: (Long) -> Unit,
 ) {
@@ -84,6 +87,19 @@ fun HomeScreen(
                         )
                     }
                 },
+                // Icône du mode courant : appuyer bascule entre mode enfant et mode adulte.
+                actions = {
+                    IconButton(onClick = onToggleMode) {
+                        Icon(
+                            imageVector = if (settings.childMode) Icons.Rounded.ChildCare else Icons.Rounded.SupervisorAccount,
+                            contentDescription = stringResource(
+                                if (settings.childMode) R.string.switch_to_adult_mode else R.string.switch_to_child_mode,
+                            ),
+                            tint = if (settings.childMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.size(30.dp),
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -102,8 +118,8 @@ fun HomeScreen(
                     Text(
                         text = stringResource(
                             when {
-                                settings.downloadedOnly -> R.string.library_empty_downloaded_only
-                                settings.hideCatalogOnHome -> R.string.library_empty_no_catalog
+                                settings.onlyDownloaded -> R.string.library_empty_downloaded_only
+                                settings.catalogHidden -> R.string.library_empty_no_catalog
                                 else -> R.string.library_empty
                             },
                         ),
@@ -125,7 +141,7 @@ fun HomeScreen(
             }
             // Le catalogue vient après les podcasts de l'enfant et défile avec eux,
             // sauf s'il est réservé aux réglages.
-            if (library != null && !settings.hideCatalogOnHome) {
+            if (library != null && !settings.catalogHidden) {
                 item(key = "catalog", span = { GridItemSpan(maxLineSpan) }) {
                     CatalogCard(onClick = onOpenCatalog)
                 }

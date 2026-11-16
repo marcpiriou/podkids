@@ -40,7 +40,21 @@ data class UiSettings(
     val settingsLocked: Boolean = false,
     /** Choix d'âge cochés dans le catalogue ; vide = tous les âges. */
     val catalogAges: Set<Int> = emptySet(),
-)
+    /**
+     * Mode enfant (par défaut) : les réglages de la carte « Mode enfant » s'appliquent. En mode
+     * adulte, tout est visible et les réglages s'ouvrent sans mot de passe.
+     */
+    val childMode: Boolean = true,
+) {
+    /** Catalogue effectivement masqué de l'accueil (mode enfant uniquement). */
+    val catalogHidden: Boolean get() = childMode && hideCatalogOnHome
+
+    /** Seuls les épisodes téléchargés sont effectivement affichés (mode enfant uniquement). */
+    val onlyDownloaded: Boolean get() = childMode && downloadedOnly
+
+    /** Le mot de passe est demandé pour ouvrir les réglages (mode enfant uniquement). */
+    val passwordRequired: Boolean get() = childMode && settingsLocked
+}
 
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "ui_settings")
 
@@ -56,6 +70,7 @@ class SettingsRepository(private val context: Context) {
             hideCatalogOnHome = prefs[KEY_HIDE_CATALOG] ?: false,
             downloadedOnly = prefs[KEY_DOWNLOADED_ONLY] ?: false,
             settingsLocked = !prefs[KEY_PASSWORD_HASH].isNullOrEmpty(),
+            childMode = prefs[KEY_CHILD_MODE] ?: true,
             catalogAges = prefs[KEY_CATALOG_AGES].orEmpty()
                 .split(',')
                 .mapNotNull { it.trim().toIntOrNull() }
@@ -70,6 +85,7 @@ class SettingsRepository(private val context: Context) {
     suspend fun setEpisodeOrder(value: EpisodeOrder) = set(KEY_EPISODE_ORDER, value.name)
     suspend fun setHideCatalogOnHome(value: Boolean) = context.settingsDataStore.edit { it[KEY_HIDE_CATALOG] = value }
     suspend fun setDownloadedOnly(value: Boolean) = context.settingsDataStore.edit { it[KEY_DOWNLOADED_ONLY] = value }
+    suspend fun setChildMode(value: Boolean) = context.settingsDataStore.edit { it[KEY_CHILD_MODE] = value }
 
     /** Définit (ou remplace) le mot de passe des réglages. */
     suspend fun setPassword(password: String) {
@@ -113,6 +129,7 @@ class SettingsRepository(private val context: Context) {
         val KEY_EPISODE_ORDER = stringPreferencesKey("episode_order")
         val KEY_HIDE_CATALOG = booleanPreferencesKey("hide_catalog_on_home")
         val KEY_DOWNLOADED_ONLY = booleanPreferencesKey("downloaded_only")
+        val KEY_CHILD_MODE = booleanPreferencesKey("child_mode")
         val KEY_PASSWORD_HASH = stringPreferencesKey("settings_password_hash")
         val KEY_PASSWORD_SALT = stringPreferencesKey("settings_password_salt")
         val KEY_CATALOG_AGES = stringPreferencesKey("catalog_ages")

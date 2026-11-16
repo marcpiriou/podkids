@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
@@ -76,21 +77,39 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
         openPlayerRequests.collect { navController.openPlayer() }
     }
 
-    // Les réglages protégés par mot de passe ne s'ouvrent qu'après saisie de celui-ci.
-    var showUnlock by rememberSaveable { mutableStateOf(false) }
-    if (showUnlock) {
-        UnlockSettingsDialog(
-            checkPassword = container.settings::checkPassword,
-            onUnlocked = {
-                showUnlock = false
-                navController.navigate(Routes.SETTINGS) { launchSingleTop = true }
-            },
-            onDismiss = { showUnlock = false },
-        )
-    }
-
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val rootScope = rememberCoroutineScope()
+
+    fun setChildMode(enabled: Boolean) {
+        rootScope.launch {
+            container.settings.setChildMode(enabled)
+            snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarHostState.showSnackbar(
+                context.getString(if (enabled) R.string.child_mode_on else R.string.adult_mode_on),
+            )
+        }
+    }
+
+    // En mode enfant, le mot de passe (s'il existe) est demandé pour ouvrir les réglages ou passer
+    // en mode adulte.
+    var unlockTarget by rememberSaveable { mutableStateOf<UnlockTarget?>(null) }
+    unlockTarget?.let { target ->
+        UnlockSettingsDialog(
+            explanation = stringResource(
+                if (target == UnlockTarget.SETTINGS) R.string.unlock_explanation else R.string.unlock_adult_mode_explanation,
+            ),
+            checkPassword = container.settings::checkPassword,
+            onUnlocked = {
+                unlockTarget = null
+                when (target) {
+                    UnlockTarget.SETTINGS -> navController.navigate(Routes.SETTINGS) { launchSingleTop = true }
+                    UnlockTarget.ADULT_MODE -> setChildMode(false)
+                }
+            },
+            onDismiss = { unlockTarget = null },
+        )
+    }
     LaunchedEffect(player) {
         player.errors.collect {
             snackbarHostState.currentSnackbarData?.dismiss()
@@ -125,13 +144,25 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                 .consumeWindowInsets(padding),
         ) {
             composable(Routes.HOME) {
-                val library by remember(settings.downloadedOnly) { container.repository.observeLibrary(settings.downloadedOnly) }
+                val library by remember(settings.onlyDownloaded) { container.repository.observeLibrary(settings.onlyDownloaded) }
                     .collectAsStateWithLifecycle(initialValue = null)
                 HomeScreen(
                     library = library,
                     settings = settings,
                     onOpenSettings = {
-                        if (settings.settingsLocked) showUnlock = true else navController.navigate(Routes.SETTINGS)
+                        if (settings.passwordRequired) {
+                            unlockTarget = UnlockTarget.SETTINGS
+                        } else {
+                            navController.navigate(Routes.SETTINGS)
+                        }
+                    },
+                    onToggleMode = {
+                        when {
+                            !settings.childMode -> setChildMode(true)
+                            // Quitter le mode enfant demande le mot de passe, s'il y en a un.
+                            settings.settingsLocked -> unlockTarget = UnlockTarget.ADULT_MODE
+                            else -> setChildMode(false)
+                        }
                     },
                     onOpenCatalog = { navController.navigate(Routes.CATALOG) },
                     onOpenPodcast = { navController.navigate(Routes.podcast(it)) },
@@ -170,7 +201,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     container = container,
                     playerState = playerState,
                     defaultEpisodeOrder = settings.episodeOrder,
-                    downloadedOnly = settings.downloadedOnly,
+                    downloadedOnly = settings.onlyDownloaded,
                     onBack = { navController.popBackStack() },
                 )
             }
@@ -181,7 +212,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     progress = player.progress,
                     onBack = { navController.popBackStack() },
                     // Pas de raccourci vers le catalogue quand il est réservé aux réglages.
-                    onOpenCatalog = if (settings.hideCatalogOnHome) {
+                    onOpenCatalog = if (settings.catalogHidden) {
                         null
                     } else {
                         { navController.navigate(Routes.CATALOG) { popUpTo(Routes.HOME) } }
@@ -281,6 +312,9 @@ private fun PodcastRoute(
         onDownloadAll = viewModel::downloadAll,
     )
 }
+
+/** Action protégée par le mot de passe des réglages. */
+private enum class UnlockTarget { SETTINGS, ADULT_MODE }
 
 private fun NavHostController.openPlayer() {
     navigate(Routes.PLAYER) { launchSingleTop = true }

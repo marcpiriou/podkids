@@ -36,11 +36,13 @@ import kotlinx.coroutines.launch
 
 /**
  * Demande le mot de passe des réglages.
+ * @param explanation ce que le mot de passe permet (ouvrir les réglages, passer en mode adulte).
  * @param checkPassword vérifie le mot de passe saisi.
  * @param onUnlocked appelé quand le mot de passe est correct.
  */
 @Composable
 fun UnlockSettingsDialog(
+    explanation: String,
     checkPassword: suspend (String) -> Boolean,
     onUnlocked: () -> Unit,
     onDismiss: () -> Unit,
@@ -72,7 +74,7 @@ fun UnlockSettingsDialog(
         title = { Text(stringResource(R.string.unlock_title)) },
         text = {
             Column {
-                Text(stringResource(R.string.unlock_explanation))
+                Text(explanation)
                 Spacer(Modifier.height(12.dp))
                 PasswordField(
                     value = password,
