@@ -71,6 +71,10 @@
     <string name="already_in_queue">Cet épisode est déjà dans la file d’attente</string>
     <string name="refresh_failed">Impossible d’actualiser ce podcast</string>
     <string name="episode_listened">Écouté</string>
+    <string name="sort_oldest_first">Du plus ancien au plus récent</string>
+    <string name="sort_newest_first">Du plus récent au plus ancien</string>
+    <string name="sort_oldest_first_action">Trié du plus ancien au plus récent. Trier du plus récent au plus ancien</string>
+    <string name="sort_newest_first_action">Trié du plus récent au plus ancien. Trier du plus ancien au plus récent</string>
 
     <!-- Lecteur -->
     <string name="play">Lire</string>
@@ -104,5 +108,8 @@
     <string name="setting_tile_size">Taille des pochettes</string>
     <string name="tile_size_small">Petites</string>
     <string name="tile_size_large">Grandes</string>
+    <string name="setting_episode_order">Ordre des épisodes</string>
+    <string name="episode_order_oldest_first">Du plus ancien</string>
+    <string name="episode_order_newest_first">Du plus récent</string>
     <string name="about_version">Podkids version %1$s</string>
 </resources>

@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.FormatSize
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.podkids.app.R
 import fr.podkids.app.data.settings.DarkMode
+import fr.podkids.app.data.settings.EpisodeOrder
 import fr.podkids.app.data.settings.TextSize
 import fr.podkids.app.data.settings.ThemeColor
 import fr.podkids.app.data.settings.TileSize
@@ -65,6 +67,7 @@ fun SettingsScreen(
     onDarkModeChange: (DarkMode) -> Unit,
     onTextSizeChange: (TextSize) -> Unit,
     onTileSizeChange: (TileSize) -> Unit,
+    onEpisodeOrderChange: (EpisodeOrder) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -126,6 +129,15 @@ fun SettingsScreen(
                     selected = settings.tileSize,
                     label = { stringResource(it.labelRes()) },
                     onSelect = onTileSizeChange,
+                )
+            }
+
+            SettingCard(icon = Icons.AutoMirrored.Rounded.Sort, title = stringResource(R.string.setting_episode_order)) {
+                ChoiceRow(
+                    options = EpisodeOrder.entries,
+                    selected = settings.episodeOrder,
+                    label = { stringResource(it.labelRes()) },
+                    onSelect = onEpisodeOrderChange,
                 )
             }
 
@@ -247,6 +259,11 @@ private fun TextSize.labelRes(): Int = when (this) {
     TextSize.NORMAL -> R.string.text_size_normal
     TextSize.LARGE -> R.string.text_size_large
     TextSize.XLARGE -> R.string.text_size_xlarge
+}
+
+private fun EpisodeOrder.labelRes(): Int = when (this) {
+    EpisodeOrder.OLDEST_FIRST -> R.string.episode_order_oldest_first
+    EpisodeOrder.NEWEST_FIRST -> R.string.episode_order_newest_first
 }
 
 private fun TileSize.labelRes(): Int = when (this) {

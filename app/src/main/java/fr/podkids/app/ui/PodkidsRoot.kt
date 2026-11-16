@@ -31,6 +31,7 @@ import androidx.navigation.navArgument
 import fr.podkids.app.AppContainer
 import fr.podkids.app.BuildConfig
 import fr.podkids.app.R
+import fr.podkids.app.data.settings.EpisodeOrder
 import fr.podkids.app.data.settings.UiSettings
 import fr.podkids.app.playback.PlayerUiState
 import fr.podkids.app.ui.catalog.CatalogScreen
@@ -149,6 +150,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     podcastId = podcastId,
                     container = container,
                     playerState = playerState,
+                    defaultEpisodeOrder = settings.episodeOrder,
                     onBack = { navController.popBackStack() },
                 )
             }
@@ -184,6 +186,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     onDarkModeChange = { scope.launch { repository.setDarkMode(it) } },
                     onTextSizeChange = { scope.launch { repository.setTextSize(it) } },
                     onTileSizeChange = { scope.launch { repository.setTileSize(it) } },
+                    onEpisodeOrderChange = { scope.launch { repository.setEpisodeOrder(it) } },
                 )
             }
         }
@@ -195,17 +198,19 @@ private fun PodcastRoute(
     podcastId: Long,
     container: AppContainer,
     playerState: PlayerUiState,
+    defaultEpisodeOrder: EpisodeOrder,
     onBack: () -> Unit,
 ) {
     val viewModel: PodcastViewModel = viewModel(
         key = "podcast-$podcastId",
         factory = viewModelFactory {
-            initializer { PodcastViewModel(podcastId, container.repository, container.player) }
+            initializer { PodcastViewModel(podcastId, container.repository, container.player, defaultEpisodeOrder) }
         },
     )
     val podcast by viewModel.podcast.collectAsStateWithLifecycle()
     val episodes by viewModel.episodes.collectAsStateWithLifecycle()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
+    val order by viewModel.order.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
@@ -230,6 +235,8 @@ private fun PodcastRoute(
         podcast = podcast,
         episodes = episodes,
         refreshing = refreshing,
+        order = order,
+        onToggleOrder = viewModel::toggleOrder,
         currentEpisodeId = playerState.current?.episodeId,
         isPlaying = playerState.isPlaying,
         snackbarHostState = snackbarHostState,

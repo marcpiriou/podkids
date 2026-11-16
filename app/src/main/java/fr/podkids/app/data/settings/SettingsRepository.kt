@@ -18,11 +18,16 @@ enum class TextSize(val scale: Float) { NORMAL(1f), LARGE(1.15f), XLARGE(1.3f) }
 /** Taille des pochettes : largeur minimale d'une tuile dans les grilles, en dp. */
 enum class TileSize(val minWidthDp: Int) { SMALL(104), LARGE(150) }
 
+/** Ordre d'affichage des épisodes d'un podcast. */
+enum class EpisodeOrder { OLDEST_FIRST, NEWEST_FIRST }
+
 data class UiSettings(
     val themeColor: ThemeColor = ThemeColor.OCEAN,
     val darkMode: DarkMode = DarkMode.SYSTEM,
     val textSize: TextSize = TextSize.NORMAL,
     val tileSize: TileSize = TileSize.LARGE,
+    /** Ordre des épisodes à l'ouverture d'un podcast (modifiable ensuite par l'icône de tri). */
+    val episodeOrder: EpisodeOrder = EpisodeOrder.OLDEST_FIRST,
     /** Choix d'âge cochés dans le catalogue ; vide = tous les âges. */
     val catalogAges: Set<Int> = emptySet(),
 )
@@ -37,6 +42,7 @@ class SettingsRepository(private val context: Context) {
             darkMode = enumOrDefault(prefs[KEY_DARK_MODE], DarkMode.SYSTEM),
             textSize = enumOrDefault(prefs[KEY_TEXT_SIZE], TextSize.NORMAL),
             tileSize = enumOrDefault(prefs[KEY_TILE_SIZE], TileSize.LARGE),
+            episodeOrder = enumOrDefault(prefs[KEY_EPISODE_ORDER], EpisodeOrder.OLDEST_FIRST),
             catalogAges = prefs[KEY_CATALOG_AGES].orEmpty()
                 .split(',')
                 .mapNotNull { it.trim().toIntOrNull() }
@@ -48,6 +54,7 @@ class SettingsRepository(private val context: Context) {
     suspend fun setDarkMode(value: DarkMode) = set(KEY_DARK_MODE, value.name)
     suspend fun setTextSize(value: TextSize) = set(KEY_TEXT_SIZE, value.name)
     suspend fun setTileSize(value: TileSize) = set(KEY_TILE_SIZE, value.name)
+    suspend fun setEpisodeOrder(value: EpisodeOrder) = set(KEY_EPISODE_ORDER, value.name)
     suspend fun setCatalogAges(ages: Set<Int>) = set(KEY_CATALOG_AGES, ages.sorted().joinToString(","))
 
     private suspend fun set(key: Preferences.Key<String>, value: String) {
@@ -62,6 +69,7 @@ class SettingsRepository(private val context: Context) {
         val KEY_DARK_MODE = stringPreferencesKey("dark_mode")
         val KEY_TEXT_SIZE = stringPreferencesKey("text_size")
         val KEY_TILE_SIZE = stringPreferencesKey("tile_size")
+        val KEY_EPISODE_ORDER = stringPreferencesKey("episode_order")
         val KEY_CATALOG_AGES = stringPreferencesKey("catalog_ages")
     }
 }

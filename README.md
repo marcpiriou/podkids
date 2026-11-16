@@ -9,6 +9,9 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
   de 3 à 12 ans), une recherche, et l'ajout d'un podcast à partir de l'adresse de son flux RSS.
 - **Écoute** : un appui sur un épisode le lit en streaming ; la lecture continue en arrière-plan avec
   notification et commandes sur l'écran verrouillé.
+- **Ordre des épisodes** : une icône de tri, sur la page d'un podcast, bascule entre l'ordre chronologique
+  (du plus ancien au plus récent, par défaut) et l'ordre inverse. L'ordre par défaut se règle dans les
+  réglages.
 - **Téléchargement** : épisode par épisode ou tous les épisodes d'un podcast, pour l'écoute hors connexion.
   Un épisode téléchargé est lu depuis le fichier local.
 - **Lecture en cours et file d'attente** : lecteur complet (pause, −10 s, +30 s, épisode suivant, curseur
@@ -16,7 +19,7 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
   sont conservées d'un lancement à l'autre.
 - **Mini-lecteur** : toujours visible en bas de l'écran dès qu'un épisode est chargé, avec la pochette à gauche.
 - **Réglages** (bouton en haut à gauche de l'accueil) : couleur du thème, apparence
-  claire / sombre / automatique, taille du texte, taille des pochettes.
+  claire / sombre / automatique, taille du texte, taille des pochettes, ordre des épisodes par défaut.
 
 ## Catalogue et contenus
 

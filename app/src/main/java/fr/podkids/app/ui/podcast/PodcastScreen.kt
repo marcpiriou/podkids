@@ -16,9 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
+import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
@@ -46,6 +48,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +56,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -61,6 +65,7 @@ import fr.podkids.app.R
 import fr.podkids.app.data.db.DownloadState
 import fr.podkids.app.data.db.EpisodeEntity
 import fr.podkids.app.data.db.PodcastEntity
+import fr.podkids.app.data.settings.EpisodeOrder
 import fr.podkids.app.ui.components.Artwork
 import fr.podkids.app.ui.components.formatDate
 import fr.podkids.app.ui.components.formatDuration
@@ -71,6 +76,8 @@ fun PodcastScreen(
     podcast: PodcastEntity?,
     episodes: List<EpisodeEntity>,
     refreshing: Boolean,
+    order: EpisodeOrder,
+    onToggleOrder: () -> Unit,
     currentEpisodeId: Long?,
     isPlaying: Boolean,
     snackbarHostState: SnackbarHostState,
@@ -100,6 +107,17 @@ fun PodcastScreen(
                     }
                 },
                 actions = {
+                    // Icône de tri : bascule entre l'ordre chronologique et l'ordre inverse.
+                    IconButton(onClick = onToggleOrder) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Sort,
+                            contentDescription = stringResource(
+                                if (order == EpisodeOrder.OLDEST_FIRST) R.string.sort_oldest_first_action else R.string.sort_newest_first_action,
+                            ),
+                            // Retournée verticalement en ordre chronologique : la barre la plus courte en haut.
+                            modifier = Modifier.graphicsLayer { scaleY = if (order == EpisodeOrder.OLDEST_FIRST) -1f else 1f },
+                        )
+                    }
                     if (refreshing) {
                         CircularProgressIndicator(
                             strokeWidth = 3.dp,
@@ -124,7 +142,17 @@ fun PodcastScreen(
             }
             return@Scaffold
         }
+        // Après un changement d'ordre, on revient en haut de la liste (sans effet à l'ouverture).
+        val listState = rememberLazyListState()
+        var shownOrder by rememberSaveable { mutableStateOf(order) }
+        LaunchedEffect(order) {
+            if (order != shownOrder) {
+                shownOrder = order
+                listState.scrollToItem(0)
+            }
+        }
         LazyColumn(
+            state = listState,
             contentPadding = PaddingValues(bottom = 24.dp),
             modifier = Modifier
                 .fillMaxSize()
@@ -132,6 +160,7 @@ fun PodcastScreen(
         ) {
             item(key = "header") {
                 PodcastHeader(
+                    order = order,
                     podcast = podcast,
                     episodeCount = episodes.size,
                     onSubscribe = onSubscribe,
@@ -208,6 +237,7 @@ fun PodcastScreen(
 
 @Composable
 private fun PodcastHeader(
+    order: EpisodeOrder,
     podcast: PodcastEntity,
     episodeCount: Int,
     onSubscribe: () -> Unit,
@@ -239,6 +269,13 @@ private fun PodcastHeader(
                 Text(
                     text = pluralStringResource(R.plurals.episode_count, episodeCount, episodeCount),
                     style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = stringResource(
+                        if (order == EpisodeOrder.OLDEST_FIRST) R.string.sort_oldest_first else R.string.sort_newest_first,
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

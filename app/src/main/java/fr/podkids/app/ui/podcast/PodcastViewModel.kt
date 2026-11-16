@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import fr.podkids.app.data.PodcastRepository
 import fr.podkids.app.data.db.EpisodeEntity
 import fr.podkids.app.data.db.PodcastEntity
+import fr.podkids.app.data.settings.EpisodeOrder
+import fr.podkids.app.data.sortedByOrder
 import fr.podkids.app.playback.PlayerConnection
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
@@ -12,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -23,12 +26,19 @@ class PodcastViewModel(
     private val podcastId: Long,
     private val repository: PodcastRepository,
     private val player: PlayerConnection,
+    /** Ordre par défaut défini dans les réglages. */
+    defaultOrder: EpisodeOrder,
 ) : ViewModel() {
+
+    /** Ordre courant : celui des réglages à l'ouverture, puis celui choisi avec l'icône de tri. */
+    private val _order = MutableStateFlow(defaultOrder)
+    val order: StateFlow<EpisodeOrder> = _order.asStateFlow()
 
     val podcast: StateFlow<PodcastEntity?> = repository.observePodcast(podcastId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val episodes: StateFlow<List<EpisodeEntity>> = repository.observeEpisodes(podcastId)
+    val episodes: StateFlow<List<EpisodeEntity>> =
+        combine(repository.observeEpisodes(podcastId), _order) { list, order -> list.sortedByOrder(order) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _refreshing = MutableStateFlow(false)
@@ -58,6 +68,13 @@ class PodcastViewModel(
             } finally {
                 _refreshing.value = false
             }
+        }
+    }
+
+    fun toggleOrder() {
+        _order.value = when (_order.value) {
+            EpisodeOrder.NEWEST_FIRST -> EpisodeOrder.OLDEST_FIRST
+            EpisodeOrder.OLDEST_FIRST -> EpisodeOrder.NEWEST_FIRST
         }
     }
 
