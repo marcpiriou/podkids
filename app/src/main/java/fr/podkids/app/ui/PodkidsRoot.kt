@@ -134,8 +134,6 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                         if (settings.settingsLocked) showUnlock = true else navController.navigate(Routes.SETTINGS)
                     },
                     onOpenCatalog = { navController.navigate(Routes.CATALOG) },
-                    onSetPassword = { scope.launch { repository.setPassword(it) } },
-                    onClearPassword = { scope.launch { repository.clearPassword() } },
                     onOpenPodcast = { navController.navigate(Routes.podcast(it)) },
                 )
             }
@@ -212,6 +210,8 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     onHideCatalogOnHomeChange = { scope.launch { repository.setHideCatalogOnHome(it) } },
                     onDownloadedOnlyChange = { scope.launch { repository.setDownloadedOnly(it) } },
                     onOpenCatalog = { navController.navigate(Routes.CATALOG) },
+                    onSetPassword = { scope.launch { repository.setPassword(it) } },
+                    onClearPassword = { scope.launch { repository.clearPassword() } },
                 )
             }
         }
