@@ -144,7 +144,6 @@ fun SettingsScreen(
                     checked = settings.hideCatalogOnHome,
                     onCheckedChange = onHideCatalogOnHomeChange,
                 )
-                }
                 Spacer(Modifier.height(12.dp))
                 SwitchRow(
                     title = stringResource(R.string.setting_downloaded_only),
