@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -80,6 +81,8 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val rootScope = rememberCoroutineScope()
+    // Réglages à jour au moment d'un appui, même si l'écran affiché n'a pas encore été recomposé.
+    val latestSettings by rememberUpdatedState(settings)
 
     fun setChildMode(enabled: Boolean) {
         rootScope.launch {
@@ -150,7 +153,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     library = library,
                     settings = settings,
                     onOpenSettings = {
-                        if (settings.passwordRequired) {
+                        if (latestSettings.passwordRequired) {
                             unlockTarget = UnlockTarget.SETTINGS
                         } else {
                             navController.navigate(Routes.SETTINGS)
@@ -158,9 +161,9 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     },
                     onToggleMode = {
                         when {
-                            !settings.childMode -> setChildMode(true)
+                            !latestSettings.childMode -> setChildMode(true)
                             // Quitter le mode enfant demande le mot de passe, s'il y en a un.
-                            settings.settingsLocked -> unlockTarget = UnlockTarget.ADULT_MODE
+                            latestSettings.settingsLocked -> unlockTarget = UnlockTarget.ADULT_MODE
                             else -> setChildMode(false)
                         }
                     },

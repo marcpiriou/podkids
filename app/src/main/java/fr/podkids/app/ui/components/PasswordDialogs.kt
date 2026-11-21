@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import fr.podkids.app.R
 import fr.podkids.app.data.settings.PasswordHasher
 import kotlinx.coroutines.launch
@@ -70,6 +71,10 @@ fun UnlockSettingsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        // Un appui hors de la fenêtre ne la ferme pas : les icônes qui l'ouvrent sont dans les coins
+        // de l'écran, un second appui ou un appui un peu long la refermait aussitôt. Elle se ferme
+        // avec « Annuler » ou le bouton retour.
+        properties = DialogProperties(dismissOnClickOutside = false),
         icon = { Icon(Icons.Rounded.Lock, contentDescription = null) },
         title = { Text(stringResource(R.string.unlock_title)) },
         text = {
@@ -127,6 +132,10 @@ fun SetPasswordDialog(onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        // Un appui hors de la fenêtre ne la ferme pas : les icônes qui l'ouvrent sont dans les coins
+        // de l'écran, un second appui ou un appui un peu long la refermait aussitôt. Elle se ferme
+        // avec « Annuler » ou le bouton retour.
+        properties = DialogProperties(dismissOnClickOutside = false),
         icon = { Icon(Icons.Rounded.Lock, contentDescription = null) },
         title = { Text(stringResource(R.string.set_password_title)) },
         text = {
