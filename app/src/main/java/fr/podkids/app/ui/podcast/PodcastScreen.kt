@@ -33,6 +33,7 @@ import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -84,6 +85,9 @@ fun PodcastScreen(
     downloadedOnly: Boolean,
     /** Glisser un épisode le marque lu / non lu. */
     swipeEnabled: Boolean,
+    /** Icône des réglages propres à ce podcast (mode adulte uniquement). */
+    showPodcastSettings: Boolean,
+    onSaveSkips: (introSec: Int, outroSec: Int) -> Unit,
     onTogglePlayed: (episodeId: Long, played: Boolean) -> Unit,
     refreshing: Boolean,
     order: EpisodeOrder,
@@ -103,6 +107,7 @@ fun PodcastScreen(
 ) {
     var confirmDownloadAll by rememberSaveable { mutableStateOf(false) }
     var confirmRemove by rememberSaveable { mutableStateOf(false) }
+    var showSettings by rememberSaveable { mutableStateOf(false) }
     var confirmDeleteDownload by rememberSaveable { mutableStateOf<Long?>(null) }
 
     Scaffold(
@@ -117,6 +122,11 @@ fun PodcastScreen(
                     }
                 },
                 actions = {
+                    if (showPodcastSettings && podcast != null) {
+                        IconButton(onClick = { showSettings = true }) {
+                            Icon(Icons.Rounded.Tune, contentDescription = stringResource(R.string.podcast_settings_title))
+                        }
+                    }
                     // Icône de tri : bascule entre l'ordre chronologique et l'ordre inverse.
                     IconButton(onClick = onToggleOrder) {
                         Icon(
@@ -267,6 +277,19 @@ fun PodcastScreen(
                 if (remaining > 0) onDownloadAll()
             },
             onDismiss = { confirmDownloadAll = false },
+        )
+    }
+
+    if (showSettings && showPodcastSettings && podcast != null) {
+        PodcastSettingsDialog(
+            podcastTitle = podcast.title,
+            skipIntroSec = podcast.skipIntroSec,
+            skipOutroSec = podcast.skipOutroSec,
+            onSave = { intro, outro ->
+                showSettings = false
+                onSaveSkips(intro, outro)
+            },
+            onDismiss = { showSettings = false },
         )
     }
 

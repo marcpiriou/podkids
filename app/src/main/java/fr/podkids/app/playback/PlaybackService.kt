@@ -49,6 +49,12 @@ class PlaybackService : MediaSessionService() {
     /** La file n'est pas persistée tant que la restauration initiale n'est pas terminée. */
     private var restored = false
 
+    /**
+     * Épisode dont la fin vient d'être sautée (réglage du podcast) : il est marqué lu, et sa
+     * position n'est plus enregistrée tant qu'on ne le réécoute pas.
+     */
+    private var outroSkippedId: Long? = null
+
     override fun onCreate() {
         super.onCreate()
         container = (application as PodkidsApp).container
@@ -90,6 +96,12 @@ class PlaybackService : MediaSessionService() {
         serviceScope.launch { restoreQueue() }
         serviceScope.launch {
             while (isActive) {
+                delay(SKIP_CHECK_INTERVAL_MS)
+                if (player.isPlaying) checkOutroSkip()
+            }
+        }
+        serviceScope.launch {
+            while (isActive) {
                 delay(POSITION_SAVE_INTERVAL_MS)
                 if (player.isPlaying) saveCurrentPosition()
             }
@@ -119,7 +131,7 @@ class PlaybackService : MediaSessionService() {
         val (saved, currentIndex) = runCatching { container.repository.loadQueue() }.getOrDefault(emptyList<EpisodeWithPodcast>() to 0)
         // Si une lecture a déjà été demandée entre-temps, elle est prioritaire.
         if (saved.isNotEmpty() && player.mediaItemCount == 0) {
-            player.setMediaItems(saved.map { it.toMediaItem() }, currentIndex, saved[currentIndex].resumePositionMs)
+            player.setMediaItems(saved.map { it.toMediaItem() }, currentIndex, saved[currentIndex].startPositionMs)
         }
         restored = true
     }
@@ -138,6 +150,7 @@ class PlaybackService : MediaSessionService() {
     }
 
     private fun savePosition(episodeId: Long, positionMs: Long) {
+        if (episodeId == outroSkippedId) return
         container.appScope.launch { container.repository.savePosition(episodeId, positionMs) }
     }
 
@@ -151,6 +164,43 @@ class PlaybackService : MediaSessionService() {
         if (excess > 0 && player.currentMediaItemIndex < player.mediaItemCount) player.removeMediaItems(0, excess)
     }
 
+    /**
+     * Saute le début de l'épisode en cours (réglage du podcast) s'il démarre avant la fin de
+     * l'intro : au lancement depuis la liste, à l'enchaînement automatique, à la restauration.
+     */
+    private fun applyIntroSkip(item: MediaItem?) {
+        val introMs = item?.skipIntroMs ?: return
+        if (introMs <= 0 || player.currentPosition >= introMs) return
+        val duration = player.duration
+        if (duration != C.TIME_UNSET && duration <= introMs) return
+        player.seekTo(introMs)
+    }
+
+    /** Passe à la suite quand il reste moins que la durée de fin à sauter (réglage du podcast). */
+    private fun checkOutroSkip() {
+        val item = player.currentMediaItem ?: return
+        val id = item.episodeId ?: return
+        val outroMs = item.skipOutroMs
+        val duration = player.duration
+        if (outroMs <= 0 || duration == C.TIME_UNSET || duration <= 0) return
+        val remaining = duration - player.currentPosition
+        if (id == outroSkippedId) {
+            // L'épisode est réécouté depuis plus loin que la fin sautée : il redevient normal.
+            if (remaining > outroMs + RESET_MARGIN_MS) outroSkippedId = null
+            return
+        }
+        // Garde-fou : on ne saute rien sur un épisode plus court que les réglages.
+        if (duration <= outroMs + item.skipIntroMs + MIN_PLAYABLE_MS) return
+        if (remaining > outroMs) return
+        outroSkippedId = id
+        markCompleted(id)
+        if (player.hasNextMediaItem()) {
+            player.seekToNextMediaItem()
+        } else {
+            player.seekTo(duration)
+        }
+    }
+
     private val playerListener = object : Player.Listener {
         override fun onPositionDiscontinuity(
             oldPosition: Player.PositionInfo,
@@ -159,8 +209,9 @@ class PlaybackService : MediaSessionService() {
         ) {
             val previousId = oldPosition.mediaItem?.episodeId ?: return
             if (previousId == newPosition.mediaItem?.episodeId) return
-            // On quitte un épisode : terminé s'il est allé au bout, sinon on mémorise où il en était.
-            if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) {
+            // On quitte un épisode : terminé s'il est allé au bout (ou si sa fin a été sautée),
+            // sinon on mémorise où il en était.
+            if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION || previousId == outroSkippedId) {
                 markCompleted(previousId)
             } else {
                 savePosition(previousId, oldPosition.positionMs)
@@ -168,6 +219,8 @@ class PlaybackService : MediaSessionService() {
         }
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            if (mediaItem?.episodeId == outroSkippedId) outroSkippedId = null
+            applyIntroSkip(mediaItem)
             trimPlayedItems()
             // L'index de l'épisode en cours change : on l'enregistre avec la liste.
             persistQueue()
@@ -214,5 +267,8 @@ class PlaybackService : MediaSessionService() {
         const val SEEK_FORWARD_MS = 30_000L
         private const val POSITION_SAVE_INTERVAL_MS = 5_000L
         private const val MAX_HISTORY = 20
+        private const val SKIP_CHECK_INTERVAL_MS = 500L
+        private const val RESET_MARGIN_MS = 3_000L
+        private const val MIN_PLAYABLE_MS = 10_000L
     }
 }

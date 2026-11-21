@@ -24,6 +24,10 @@ data class PodcastEntity(
     val subscribed: Boolean,
     val addedAt: Long,
     val lastRefreshedAt: Long,
+    /** Secondes à sauter au début de chaque épisode (messages promotionnels) ; 0 = rien. */
+    @ColumnInfo(defaultValue = "0") val skipIntroSec: Int = 0,
+    /** Passer à la suite quand il reste moins de ce nombre de secondes ; 0 = jamais. */
+    @ColumnInfo(defaultValue = "0") val skipOutroSec: Int = 0,
 )
 
 @Entity(
@@ -73,9 +77,14 @@ data class EpisodeWithPodcast(
     @Embedded val episode: EpisodeEntity,
     @ColumnInfo(name = "podcastTitle") val podcastTitle: String,
     @ColumnInfo(name = "podcastImageUrl") val podcastImageUrl: String?,
+    @ColumnInfo(name = "podcastSkipIntroSec") val podcastSkipIntroSec: Int = 0,
+    @ColumnInfo(name = "podcastSkipOutroSec") val podcastSkipOutroSec: Int = 0,
 ) {
     val artworkUrl: String? get() = episode.imageUrl ?: podcastImageUrl
 
     /** Position de reprise : on repart du début si l'épisode a déjà été écouté en entier. */
     val resumePositionMs: Long get() = if (episode.completed) 0L else episode.positionMs
+
+    /** Position de départ d'une lecture : la reprise, mais jamais avant la fin de l'intro à sauter. */
+    val startPositionMs: Long get() = maxOf(resumePositionMs, podcastSkipIntroSec * 1000L)
 }

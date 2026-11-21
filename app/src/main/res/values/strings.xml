@@ -73,6 +73,15 @@
     <string name="already_in_queue">Cet épisode est déjà dans la file d’attente</string>
     <string name="refresh_failed">Impossible d’actualiser ce podcast</string>
     <string name="no_downloaded_episode">Aucun épisode téléchargé pour ce podcast.</string>
+    <string name="podcast_settings_title">Réglages de ce podcast</string>
+    <string name="podcast_settings_explanation">Ces réglages ne concernent que « %1$s ». Laisse vide ou à 0 pour ne rien sauter.</string>
+    <string name="skip_intro_label">Passer le début</string>
+    <string name="skip_intro_help">Au lancement d’un épisode, la lecture démarre après ce nombre de secondes.</string>
+    <string name="skip_outro_label">Passer la fin</string>
+    <string name="skip_outro_help">Quand il reste moins que ce nombre de secondes, l’épisode est marqué lu et la lecture passe à la suite.</string>
+    <string name="skip_too_long">%1$d secondes au maximum.</string>
+    <string name="seconds_suffix">s</string>
+    <string name="save">Enregistrer</string>
     <string name="played_episodes">Épisodes lus</string>
     <string name="mark_played">Marquer comme lu</string>
     <string name="mark_unplayed">Marquer comme non lu</string>

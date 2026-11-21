@@ -87,6 +87,10 @@ class PodcastRepository(
 
     suspend fun subscribe(podcastId: Long) = podcastDao.setSubscribed(podcastId, true)
 
+    /** Réglages propres à un podcast : secondes à sauter au début et à la fin de chaque épisode. */
+    suspend fun setSkips(podcastId: Long, introSec: Int, outroSec: Int) =
+        podcastDao.setSkips(podcastId, introSec.coerceIn(0, MAX_SKIP_SEC), outroSec.coerceIn(0, MAX_SKIP_SEC))
+
     /** Retire un podcast de la bibliothèque, avec ses épisodes téléchargés. */
     suspend fun removePodcast(podcastId: Long) {
         downloader.removeAllForPodcast(podcastId)
@@ -149,6 +153,9 @@ class PodcastRepository(
     }
 
     companion object {
+        /** Limite des réglages « passer le début / la fin » : 10 minutes. */
+        const val MAX_SKIP_SEC = 600
+
         /** Tolère les saisies sans schéma et les liens « feed:// » ou « podcast:// ». */
         fun normalizeFeedUrl(input: String): String? {
             var url = input.trim()

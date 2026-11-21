@@ -202,6 +202,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     defaultEpisodeOrder = settings.episodeOrder,
                     downloadedOnly = settings.onlyDownloaded,
                     swipeEnabled = settings.swipeEnabled,
+                    showPodcastSettings = !settings.childMode,
                     onBack = { navController.popBackStack() },
                 )
             }
@@ -255,6 +256,7 @@ private fun PodcastRoute(
     defaultEpisodeOrder: EpisodeOrder,
     downloadedOnly: Boolean,
     swipeEnabled: Boolean,
+    showPodcastSettings: Boolean,
     onBack: () -> Unit,
 ) {
     val viewModel: PodcastViewModel = viewModel(
@@ -295,6 +297,8 @@ private fun PodcastRoute(
         episodes = episodes,
         downloadedOnly = downloadedOnly,
         swipeEnabled = swipeEnabled,
+        showPodcastSettings = showPodcastSettings,
+        onSaveSkips = viewModel::setSkips,
         onTogglePlayed = viewModel::togglePlayed,
         refreshing = refreshing,
         order = order,

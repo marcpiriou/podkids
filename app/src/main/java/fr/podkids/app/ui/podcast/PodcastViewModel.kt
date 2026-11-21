@@ -82,6 +82,10 @@ class PodcastViewModel(
         viewModelScope.launch { repository.setPlayed(episodeId, played) }
     }
 
+    fun setSkips(introSec: Int, outroSec: Int) {
+        viewModelScope.launch { repository.setSkips(podcastId, introSec, outroSec) }
+    }
+
     fun subscribe() {
         viewModelScope.launch { repository.subscribe(podcastId) }
     }

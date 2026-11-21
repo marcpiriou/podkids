@@ -38,6 +38,9 @@ abstract class PodcastDao {
     @Update
     abstract suspend fun update(podcast: PodcastEntity)
 
+    @Query("UPDATE podcasts SET skipIntroSec = :introSec, skipOutroSec = :outroSec WHERE id = :id")
+    abstract suspend fun setSkips(id: Long, introSec: Int, outroSec: Int)
+
     @Query("UPDATE podcasts SET subscribed = :subscribed WHERE id = :id")
     abstract suspend fun setSubscribed(id: Long, subscribed: Boolean)
 
@@ -67,7 +70,8 @@ abstract class EpisodeDao {
 
     @Query(
         """
-        SELECT e.*, p.title AS podcastTitle, p.imageUrl AS podcastImageUrl
+        SELECT e.*, p.title AS podcastTitle, p.imageUrl AS podcastImageUrl,
+            p.skipIntroSec AS podcastSkipIntroSec, p.skipOutroSec AS podcastSkipOutroSec
         FROM episodes e INNER JOIN podcasts p ON p.id = e.podcastId
         WHERE e.id = :id
         """,
@@ -164,7 +168,8 @@ abstract class EpisodeDao {
 abstract class QueueDao {
     @Query(
         """
-        SELECT e.*, p.title AS podcastTitle, p.imageUrl AS podcastImageUrl
+        SELECT e.*, p.title AS podcastTitle, p.imageUrl AS podcastImageUrl,
+            p.skipIntroSec AS podcastSkipIntroSec, p.skipOutroSec AS podcastSkipOutroSec
         FROM queue q
         INNER JOIN episodes e ON e.id = q.episodeId
         INNER JOIN podcasts p ON p.id = e.podcastId

@@ -114,7 +114,7 @@ class PlayerConnection(private val context: Context) {
     fun playNow(entry: EpisodeWithPodcast) {
         val player = controller ?: return
         val item = entry.toMediaItem()
-        val startMs = entry.resumePositionMs
+        val startMs = entry.startPositionMs
         val currentIndex = player.currentMediaItemIndex
         val existingIndex = indexOf(player, item.mediaId)
         when {
@@ -142,7 +142,7 @@ class PlayerConnection(private val context: Context) {
         val item = entry.toMediaItem()
         if (indexOf(player, item.mediaId) >= 0) return false
         if (player.mediaItemCount == 0) {
-            player.setMediaItem(item, entry.resumePositionMs)
+            player.setMediaItem(item, entry.startPositionMs)
             player.prepare()
         } else {
             player.addMediaItem(item)
@@ -190,7 +190,7 @@ class PlayerConnection(private val context: Context) {
             return
         }
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
-        if (player.playbackState == Player.STATE_ENDED) player.seekTo(0L)
+        if (player.playbackState == Player.STATE_ENDED) player.seekTo(player.currentMediaItem?.skipIntroMs ?: 0L)
         player.play()
     }
 

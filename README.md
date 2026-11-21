@@ -12,6 +12,9 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
 - **Épisodes lus** : un épisode écouté jusqu'au bout est marqué comme lu et rangé en bas de la liste, dans
   une section « Épisodes lus ». Glisser un épisode vers la gauche ou la droite le marque lu ou non lu
   (toujours possible en mode adulte, sur réglage en mode enfant).
+- **Réglages d'un podcast** (mode adulte, icône en haut à droite de la page du podcast) : passer
+  automatiquement les X premières secondes de chaque épisode (messages promotionnels), et passer à la suite
+  quand il reste moins de X secondes. Ces réglages ne concernent que ce podcast.
 - **Ordre des épisodes** : une icône de tri, sur la page d'un podcast, bascule entre l'ordre chronologique
   (du plus ancien au plus récent, par défaut) et l'ordre inverse. L'ordre par défaut se règle dans les
   réglages.
