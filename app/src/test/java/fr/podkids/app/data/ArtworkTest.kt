@@ -16,7 +16,9 @@ class ArtworkTest {
         assertEquals(1, ArtworkStore.sampleSize(600, 600, 800))
         assertEquals(1, ArtworkStore.sampleSize(1400, 1400, 800))
         assertEquals(2, ArtworkStore.sampleSize(1600, 1600, 800))
-        assertEquals(4, ArtworkStore.sampleSize(3000, 3000, 800))
+        // 3000 / 4 = 750 passerait sous la cible : on s'arrête à 2 (1500), la mise à l'échelle finit le travail.
+        assertEquals(2, ArtworkStore.sampleSize(3000, 3000, 800))
+        assertEquals(4, ArtworkStore.sampleSize(3200, 3200, 800))
     }
 
     @Test
