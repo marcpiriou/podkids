@@ -2,7 +2,6 @@ package fr.podkids.app.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,16 +10,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Sort
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.DarkMode
-import androidx.compose.material.icons.rounded.Explore
 import androidx.compose.material.icons.rounded.ChildCare
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.Button
@@ -28,7 +24,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +33,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.material3.Surface
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,7 +70,6 @@ fun SettingsScreen(
     onHideCatalogOnHomeChange: (Boolean) -> Unit,
     onDownloadedOnlyChange: (Boolean) -> Unit,
     onSwipeToMarkPlayedChange: (Boolean) -> Unit,
-    onOpenCatalog: () -> Unit,
     onSetPassword: (String) -> Unit,
     onClearPassword: () -> Unit,
 ) {
@@ -142,13 +144,6 @@ fun SettingsScreen(
                     checked = settings.hideCatalogOnHome,
                     onCheckedChange = onHideCatalogOnHomeChange,
                 )
-                if (settings.hideCatalogOnHome) {
-                    Spacer(Modifier.height(8.dp))
-                    Button(onClick = onOpenCatalog, modifier = Modifier.fillMaxWidth()) {
-                        Icon(Icons.Rounded.Explore, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.open_catalog))
-                    }
                 }
                 Spacer(Modifier.height(12.dp))
                 SwitchRow(
@@ -240,6 +235,10 @@ private fun SwitchRow(title: String, description: String, checked: Boolean, onCh
     }
 }
 
+/**
+ * Choix exclusif présenté en segments de même largeur, qui occupent toute la largeur de la carte
+ * sans jamais en dépasser. Le libellé passe sur deux lignes si la taille du texte l'exige.
+ */
 @Composable
 private fun <T> ChoiceRow(
     options: List<T>,
@@ -249,19 +248,34 @@ private fun <T> ChoiceRow(
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.horizontalScroll(rememberScrollState()),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .selectableGroup(),
     ) {
         options.forEach { option ->
-            FilterChip(
-                selected = option == selected,
+            val isSelected = option == selected
+            Surface(
+                selected = isSelected,
                 onClick = { onSelect(option) },
-                label = { Text(label(option)) },
-                leadingIcon = if (option == selected) {
-                    { Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
-                } else {
-                    null
-                },
-            )
+                shape = MaterialTheme.shapes.small,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerLowest,
+                contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                border = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .heightIn(min = 48.dp),
+            ) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 6.dp, vertical = 10.dp)) {
+                    Text(
+                        text = label(option),
+                        style = MaterialTheme.typography.labelLarge,
+                        textAlign = TextAlign.Center,
+                        maxLines = 2,
+                    )
+                }
+            }
         }
     }
 }

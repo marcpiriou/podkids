@@ -134,7 +134,7 @@
     <string name="switch_to_child_mode">Mode adulte. Passer en mode enfant</string>
     <string name="unlock_adult_mode_explanation">Saisis le mot de passe pour passer en mode adulte.</string>
     <string name="setting_hide_catalog">Masquer le catalogue de l’accueil</string>
-    <string name="setting_hide_catalog_description">En mode enfant, le catalogue ne s’ouvre plus que depuis ce bouton des réglages.</string>
+    <string name="setting_hide_catalog_description">En mode enfant, le catalogue n’apparaît plus sur l’accueil. Il reste accessible en mode adulte.</string>
     <string name="setting_downloaded_only">Épisodes téléchargés uniquement</string>
     <string name="setting_downloaded_only_description">En mode enfant, seuls les épisodes téléchargés sont affichés, sans les boutons de téléchargement ni de suppression.</string>
     <string name="setting_swipe_played">Glisser pour marquer lu / non lu</string>

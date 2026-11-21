@@ -242,7 +242,6 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     onHideCatalogOnHomeChange = { scope.launch { repository.setHideCatalogOnHome(it) } },
                     onDownloadedOnlyChange = { scope.launch { repository.setDownloadedOnly(it) } },
                     onSwipeToMarkPlayedChange = { scope.launch { repository.setSwipeToMarkPlayed(it) } },
-                    onOpenCatalog = { navController.navigate(Routes.CATALOG) },
                     onSetPassword = { scope.launch { repository.setPassword(it) } },
                     onClearPassword = { scope.launch { repository.clearPassword() } },
                 )
