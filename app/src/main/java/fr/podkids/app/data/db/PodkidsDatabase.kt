@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [PodcastEntity::class, EpisodeEntity::class, QueueItemEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class PodkidsDatabase : RoomDatabase() {
@@ -20,7 +20,7 @@ abstract class PodkidsDatabase : RoomDatabase() {
     companion object {
         fun create(context: Context): PodkidsDatabase =
             Room.databaseBuilder(context, PodkidsDatabase::class.java, "podkids.db")
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                 .build()
 
         /** Version 2 : réglages par podcast pour sauter le début et la fin des épisodes. */
@@ -28,6 +28,14 @@ abstract class PodkidsDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE podcasts ADD COLUMN skipIntroSec INTEGER NOT NULL DEFAULT 0")
                 db.execSQL("ALTER TABLE podcasts ADD COLUMN skipOutroSec INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        /** Version 3 : copies locales des images (podcasts et épisodes téléchargés). */
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE podcasts ADD COLUMN localImagePath TEXT")
+                db.execSQL("ALTER TABLE episodes ADD COLUMN localImagePath TEXT")
             }
         }
     }

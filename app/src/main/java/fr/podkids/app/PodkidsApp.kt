@@ -5,6 +5,7 @@ import android.content.Context
 import fr.podkids.app.data.PodcastRepository
 import fr.podkids.app.data.catalog.CatalogRepository
 import fr.podkids.app.data.db.PodkidsDatabase
+import fr.podkids.app.data.download.ArtworkStore
 import fr.podkids.app.data.download.EpisodeDownloader
 import fr.podkids.app.data.settings.SettingsRepository
 import fr.podkids.app.playback.PlayerConnection
@@ -28,8 +29,9 @@ class AppContainer(context: Context) {
     val database: PodkidsDatabase = PodkidsDatabase.create(context)
     val settings = SettingsRepository(context)
     val catalog = CatalogRepository(context)
-    private val downloader = EpisodeDownloader(context, database.episodeDao())
-    val repository = PodcastRepository(database, httpClient, downloader)
+    val artwork = ArtworkStore(context, httpClient, database)
+    private val downloader = EpisodeDownloader(context, database.episodeDao(), artwork)
+    val repository = PodcastRepository(database, httpClient, downloader, artwork)
     val player = PlayerConnection(context)
 }
 
@@ -41,5 +43,7 @@ class PodkidsApp : Application() {
         super.onCreate()
         container = AppContainer(this)
         container.appScope.launch { container.repository.cleanUpPreviews() }
+        // Images des épisodes déjà téléchargés qui n'en ont pas encore de copie locale.
+        container.appScope.launch { runCatching { container.artwork.backfill() } }
     }
 }

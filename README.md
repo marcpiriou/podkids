@@ -20,6 +20,7 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
   réglages.
 - **Téléchargement** : épisode par épisode ou tous les épisodes d'un podcast, pour l'écoute hors connexion.
   Un épisode téléchargé est lu depuis le fichier local.
+  L'image de l'épisode et la pochette du podcast sont téléchargées avec lui, pour s'afficher hors connexion.
 - **Lecture en cours et file d'attente** : lecteur volontairement simple (lecture / pause et curseur
   de position) et file d'attente (ajout, réorganisation, suppression). La file et la position d'écoute
   sont conservées d'un lancement à l'autre.

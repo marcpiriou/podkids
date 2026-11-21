@@ -138,7 +138,7 @@ fun HomeScreen(
             items(library.orEmpty(), key = { it.id }) { podcast ->
                 PodcastTile(
                     title = podcast.title,
-                    imageUrl = podcast.imageUrl,
+                    imageUrl = podcast.displayImage,
                     onClick = { onOpenPodcast(podcast.id) },
                 )
             }

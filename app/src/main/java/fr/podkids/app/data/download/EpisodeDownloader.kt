@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit
 class EpisodeDownloader(
     private val context: Context,
     private val episodeDao: EpisodeDao,
+    private val artwork: ArtworkStore,
 ) {
     private val workManager: WorkManager get() = WorkManager.getInstance(context)
 
@@ -56,6 +57,7 @@ class EpisodeDownloader(
             targetFile(context, episode).delete()
             partFile(context, episode).delete()
         }
+        artwork.deleteEpisodeArtwork(episodeId)
         episodeDao.clearDownload(episodeId)
     }
 

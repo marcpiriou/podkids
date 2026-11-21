@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.io.File
 
 enum class DownloadState { NONE, QUEUED, DOWNLOADING, DOWNLOADED, FAILED }
 
@@ -28,7 +29,12 @@ data class PodcastEntity(
     @ColumnInfo(defaultValue = "0") val skipIntroSec: Int = 0,
     /** Passer à la suite quand il reste moins de ce nombre de secondes ; 0 = jamais. */
     @ColumnInfo(defaultValue = "0") val skipOutroSec: Int = 0,
-)
+    /** Copie locale de la pochette, téléchargée avec les épisodes (écoute hors connexion). */
+    val localImagePath: String? = null,
+) {
+    /** Image à afficher : la copie locale si elle existe, sinon l'adresse en ligne. */
+    val displayImage: String? get() = localImageUri(localImagePath) ?: imageUrl
+}
 
 @Entity(
     tableName = "episodes",
@@ -61,6 +67,8 @@ data class EpisodeEntity(
     /** 0..100, ou -1 quand la taille du fichier est inconnue. */
     val downloadProgress: Int = 0,
     val localPath: String? = null,
+    /** Copie locale de l'image de l'épisode, téléchargée avec son audio. */
+    val localImagePath: String? = null,
 )
 
 /**
@@ -79,8 +87,14 @@ data class EpisodeWithPodcast(
     @ColumnInfo(name = "podcastImageUrl") val podcastImageUrl: String?,
     @ColumnInfo(name = "podcastSkipIntroSec") val podcastSkipIntroSec: Int = 0,
     @ColumnInfo(name = "podcastSkipOutroSec") val podcastSkipOutroSec: Int = 0,
+    @ColumnInfo(name = "podcastLocalImagePath") val podcastLocalImagePath: String? = null,
 ) {
-    val artworkUrl: String? get() = episode.imageUrl ?: podcastImageUrl
+    /** Image de l'épisode : copies locales d'abord, pour qu'elle s'affiche aussi hors connexion. */
+    val artworkUrl: String?
+        get() = localImageUri(episode.localImagePath)
+            ?: episode.imageUrl
+            ?: localImageUri(podcastLocalImagePath)
+            ?: podcastImageUrl
 
     /** Position de reprise : on repart du début si l'épisode a déjà été écouté en entier. */
     val resumePositionMs: Long get() = if (episode.completed) 0L else episode.positionMs
@@ -88,3 +102,7 @@ data class EpisodeWithPodcast(
     /** Position de départ d'une lecture : la reprise, mais jamais avant la fin de l'intro à sauter. */
     val startPositionMs: Long get() = maxOf(resumePositionMs, podcastSkipIntroSec * 1000L)
 }
+
+/** Adresse « file:// » d'une image téléchargée, ou null si le fichier n'existe pas (ou plus). */
+fun localImageUri(path: String?): String? =
+    path?.let(::File)?.takeIf { it.isFile }?.let { "file://" + it.absolutePath }

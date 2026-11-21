@@ -342,7 +342,7 @@ private fun PodcastHeader(
     var expanded by remember { mutableStateOf(false) }
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Artwork(url = podcast.imageUrl, modifier = Modifier.size(120.dp))
+            Artwork(url = podcast.displayImage, modifier = Modifier.size(120.dp))
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(

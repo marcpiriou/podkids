@@ -4,6 +4,7 @@ import fr.podkids.app.data.db.EpisodeEntity
 import fr.podkids.app.data.db.EpisodeWithPodcast
 import fr.podkids.app.data.db.PodcastEntity
 import fr.podkids.app.data.db.PodkidsDatabase
+import fr.podkids.app.data.download.ArtworkStore
 import fr.podkids.app.data.download.EpisodeDownloader
 import fr.podkids.app.data.rss.InvalidFeedException
 import fr.podkids.app.data.rss.ParsedFeed
@@ -20,6 +21,7 @@ class PodcastRepository(
     private val database: PodkidsDatabase,
     private val httpClient: OkHttpClient,
     private val downloader: EpisodeDownloader,
+    private val artwork: ArtworkStore,
 ) {
     private val podcastDao = database.podcastDao()
     private val episodeDao = database.episodeDao()
@@ -63,12 +65,15 @@ class PodcastRepository(
                 ),
             )
         } else {
+            val newImageUrl = feed.imageUrl ?: existing.imageUrl ?: fallbackImageUrl
             podcastDao.update(
                 existing.copy(
                     title = feed.title.ifBlank { existing.title },
                     author = feed.author,
                     description = feed.description,
-                    imageUrl = feed.imageUrl ?: existing.imageUrl ?: fallbackImageUrl,
+                    imageUrl = newImageUrl,
+                    // Nouvelle pochette : l'ancienne copie locale est oubliée (re-téléchargée au besoin).
+                    localImagePath = existing.localImagePath.takeIf { newImageUrl == existing.imageUrl },
                     subscribed = existing.subscribed || subscribe,
                     lastRefreshedAt = now,
                 ),
@@ -94,6 +99,7 @@ class PodcastRepository(
     /** Retire un podcast de la bibliothèque, avec ses épisodes téléchargés. */
     suspend fun removePodcast(podcastId: Long) {
         downloader.removeAllForPodcast(podcastId)
+        artwork.deletePodcastArtwork(podcastId)
         podcastDao.delete(podcastId)
     }
 

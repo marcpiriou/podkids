@@ -38,6 +38,9 @@ abstract class PodcastDao {
     @Update
     abstract suspend fun update(podcast: PodcastEntity)
 
+    @Query("UPDATE podcasts SET localImagePath = :path WHERE id = :id")
+    abstract suspend fun setLocalImage(id: Long, path: String?)
+
     @Query("UPDATE podcasts SET skipIntroSec = :introSec, skipOutroSec = :outroSec WHERE id = :id")
     abstract suspend fun setSkips(id: Long, introSec: Int, outroSec: Int)
 
@@ -71,7 +74,8 @@ abstract class EpisodeDao {
     @Query(
         """
         SELECT e.*, p.title AS podcastTitle, p.imageUrl AS podcastImageUrl,
-            p.skipIntroSec AS podcastSkipIntroSec, p.skipOutroSec AS podcastSkipOutroSec
+            p.skipIntroSec AS podcastSkipIntroSec, p.skipOutroSec AS podcastSkipOutroSec,
+            p.localImagePath AS podcastLocalImagePath
         FROM episodes e INNER JOIN podcasts p ON p.id = e.podcastId
         WHERE e.id = :id
         """,
@@ -126,6 +130,13 @@ abstract class EpisodeDao {
     @Query("UPDATE episodes SET positionMs = 0, completed = 1 WHERE id = :id")
     abstract suspend fun markCompleted(id: Long)
 
+    @Query("UPDATE episodes SET localImagePath = :path WHERE id = :id")
+    abstract suspend fun setLocalImage(id: Long, path: String?)
+
+    /** Épisodes téléchargés dont l'image n'a pas encore de copie locale. */
+    @Query("SELECT * FROM episodes WHERE downloadState = 'DOWNLOADED' AND localImagePath IS NULL")
+    abstract suspend fun downloadedWithoutLocalImage(): List<EpisodeEntity>
+
     /** Remet un épisode « non lu » : il sera repris depuis le début. */
     @Query("UPDATE episodes SET positionMs = 0, completed = 0 WHERE id = :id")
     abstract suspend fun markUnplayed(id: Long)
@@ -148,7 +159,9 @@ abstract class EpisodeDao {
     )
     abstract suspend fun setDownloaded(id: Long, path: String)
 
-    @Query("UPDATE episodes SET downloadState = 'NONE', downloadProgress = 0, localPath = NULL WHERE id = :id")
+    @Query(
+        "UPDATE episodes SET downloadState = 'NONE', downloadProgress = 0, localPath = NULL, localImagePath = NULL WHERE id = :id",
+    )
     abstract suspend fun clearDownload(id: Long)
 
     @Query(
@@ -169,7 +182,8 @@ abstract class QueueDao {
     @Query(
         """
         SELECT e.*, p.title AS podcastTitle, p.imageUrl AS podcastImageUrl,
-            p.skipIntroSec AS podcastSkipIntroSec, p.skipOutroSec AS podcastSkipOutroSec
+            p.skipIntroSec AS podcastSkipIntroSec, p.skipOutroSec AS podcastSkipOutroSec,
+            p.localImagePath AS podcastLocalImagePath
         FROM queue q
         INNER JOIN episodes e ON e.id = q.episodeId
         INNER JOIN podcasts p ON p.id = e.podcastId

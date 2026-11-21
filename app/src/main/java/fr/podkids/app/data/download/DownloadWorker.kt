@@ -47,6 +47,17 @@ class DownloadWorker(
                 if (!part.renameTo(target)) throw IOException("Impossible de finaliser le fichier")
             }
             dao.setDownloaded(episodeId, target.absolutePath)
+            // Image de l'épisode et pochette du podcast, pour l'affichage hors connexion. Un échec ici
+            // ne remet pas en cause l'audio : l'image sera retentée au prochain démarrage.
+            try {
+                container.database.podcastDao().get(episode.podcastId)?.let { podcast ->
+                    container.artwork.ensureEpisodeArtwork(episode, podcast)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Ignoré volontairement (voir ci-dessus).
+            }
             Result.success()
         } catch (e: CancellationException) {
             // Annulation : par l'utilisateur (l'état est remis à zéro par EpisodeDownloader.remove)
