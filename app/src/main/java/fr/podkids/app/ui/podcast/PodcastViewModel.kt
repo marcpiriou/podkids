@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-enum class PodcastEvent { ADDED_TO_QUEUE, ALREADY_IN_QUEUE, REFRESH_FAILED, REMOVED }
+enum class PodcastEvent { ADDED_TO_QUEUE, ALREADY_IN_QUEUE, REMOVED_FROM_QUEUE, REFRESH_FAILED, REMOVED }
 
 class PodcastViewModel(
     private val podcastId: Long,
@@ -100,6 +100,17 @@ class PodcastViewModel(
     fun play(episodeId: Long) {
         viewModelScope.launch {
             repository.getEpisodeWithPodcast(episodeId)?.let(player::playNow)
+        }
+    }
+
+    /** Ajoute l'épisode à la file d'attente, ou l'en retire s'il y est déjà. */
+    fun toggleQueue(episodeId: Long, inQueue: Boolean) {
+        if (inQueue) {
+            if (player.removeFromQueue(episodeId)) {
+                viewModelScope.launch { _events.send(PodcastEvent.REMOVED_FROM_QUEUE) }
+            }
+        } else {
+            addToQueue(episodeId)
         }
     }
 

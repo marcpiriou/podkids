@@ -70,6 +70,7 @@
     <string name="delete_download_confirm">L’épisode restera écoutable en streaming avec une connexion Internet.</string>
     <string name="add_to_queue">Ajouter à la file d’attente</string>
     <string name="added_to_queue">Ajouté à la file d’attente</string>
+    <string name="removed_from_queue">Retiré de la file d’attente</string>
     <string name="already_in_queue">Cet épisode est déjà dans la file d’attente</string>
     <string name="refresh_failed">Impossible d’actualiser ce podcast</string>
     <string name="no_downloaded_episode">Aucun épisode téléchargé pour ce podcast.</string>

@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
+import androidx.compose.material.icons.automirrored.rounded.PlaylistAddCheck
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Check
@@ -105,7 +106,10 @@ fun PodcastScreen(
     onTogglePlay: () -> Unit,
     /** Avancement en direct de l'épisode en cours de lecture. */
     playbackProgress: StateFlow<PlaybackProgress>,
-    onAddToQueue: (Long) -> Unit,
+    /** Ajoute l'épisode à la file d'attente, ou l'en retire s'il y est (second paramètre). */
+    onToggleQueue: (episodeId: Long, inQueue: Boolean) -> Unit,
+    /** Épisodes présents dans la file d'attente (hors épisode en cours). */
+    queuedEpisodeIds: Set<Long>,
     onDownload: (Long) -> Unit,
     onRemoveDownload: (Long) -> Unit,
     onDownloadAll: () -> Unit,
@@ -222,7 +226,8 @@ fun PodcastScreen(
                                 if (episode.id == currentEpisodeId) onTogglePlay() else onPlay(episode.id)
                             },
                             playbackProgress = playbackProgress,
-                            onAddToQueue = { onAddToQueue(episode.id) },
+                            inQueue = episode.id in queuedEpisodeIds,
+                            onToggleQueue = { onToggleQueue(episode.id, episode.id in queuedEpisodeIds) },
                             onDownload = { onDownload(episode.id) },
                             onCancelDownload = { onRemoveDownload(episode.id) },
                             onDeleteDownload = { confirmDeleteDownload = episode.id },
@@ -422,7 +427,8 @@ private fun EpisodeRow(
     isPlaying: Boolean,
     onPlay: () -> Unit,
     playbackProgress: StateFlow<PlaybackProgress>,
-    onAddToQueue: () -> Unit,
+    inQueue: Boolean,
+    onToggleQueue: () -> Unit,
     onDownload: () -> Unit,
     onCancelDownload: () -> Unit,
     onDeleteDownload: () -> Unit,
@@ -485,10 +491,12 @@ private fun EpisodeRow(
                 )
             }
         }
-        IconButton(onClick = onAddToQueue) {
+        // Bleue quand l'épisode est dans la file d'attente ; un nouvel appui l'en retire.
+        IconButton(onClick = onToggleQueue) {
             Icon(
-                Icons.AutoMirrored.Rounded.PlaylistAdd,
-                contentDescription = stringResource(R.string.add_to_queue),
+                imageVector = if (inQueue) Icons.AutoMirrored.Rounded.PlaylistAddCheck else Icons.AutoMirrored.Rounded.PlaylistAdd,
+                contentDescription = stringResource(if (inQueue) R.string.queue_remove else R.string.add_to_queue),
+                tint = if (inQueue) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         if (showDownloadButton) {

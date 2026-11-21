@@ -140,13 +140,32 @@ class PlayerConnection(private val context: Context) {
     fun addToQueue(entry: EpisodeWithPodcast): Boolean {
         val player = controller ?: return false
         val item = entry.toMediaItem()
-        if (indexOf(player, item.mediaId) >= 0) return false
+        val existingIndex = indexOf(player, item.mediaId)
+        val currentIndex = player.currentMediaItemIndex
+        when {
+            // Épisode en cours ou déjà dans la file.
+            existingIndex >= currentIndex -> return false
+            // Épisode déjà écouté, gardé dans l'historique : on le remet en fin de file.
+            existingIndex >= 0 -> {
+                player.moveMediaItem(existingIndex, player.mediaItemCount - 1)
+                return true
+            }
+        }
         if (player.mediaItemCount == 0) {
             player.setMediaItem(item, entry.startPositionMs)
             player.prepare()
         } else {
             player.addMediaItem(item)
         }
+        return true
+    }
+
+    /** Retire un épisode de la file d'attente (jamais l'épisode en cours). @return false s'il n'y était pas. */
+    fun removeFromQueue(episodeId: Long): Boolean {
+        val player = controller ?: return false
+        val index = indexOf(player, episodeId.toString())
+        if (index <= player.currentMediaItemIndex) return false
+        player.removeMediaItem(index)
         return true
     }
 

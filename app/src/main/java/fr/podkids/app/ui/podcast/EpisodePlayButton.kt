@@ -21,7 +21,7 @@ import fr.podkids.app.R
 
 /**
  * Bouton lecture / pause d'un épisode, entouré d'un anneau qui indique son avancement
- * (0 = pas commencé, 1 = écouté en entier).
+ * (0 = pas commencé : anneau bleu, 1 = écouté en entier : anneau grisé bleuté).
  */
 @Composable
 fun EpisodePlayButton(
@@ -35,8 +35,10 @@ fun EpisodePlayButton(
     Box(contentAlignment = Alignment.Center, modifier = modifier.size(52.dp)) {
         CircularProgressIndicator(
             progress = { fraction.coerceIn(0f, 1f) },
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.outlineVariant,
+            // Partie écoutée grisée bleutée, reste à écouter en bleu : un épisode jamais écouté
+            // a un anneau entièrement bleu, un épisode lu un anneau entièrement grisé.
+            color = MaterialTheme.colorScheme.outlineVariant,
+            trackColor = MaterialTheme.colorScheme.primary,
             strokeWidth = 3.dp,
             strokeCap = StrokeCap.Round,
             gapSize = 0.dp,

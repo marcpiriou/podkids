@@ -287,6 +287,7 @@ private fun PodcastRoute(
                 }
                 PodcastEvent.ADDED_TO_QUEUE -> R.string.added_to_queue
                 PodcastEvent.ALREADY_IN_QUEUE -> R.string.already_in_queue
+                PodcastEvent.REMOVED_FROM_QUEUE -> R.string.removed_from_queue
                 PodcastEvent.REFRESH_FAILED -> R.string.refresh_failed
             }
             // Un nouveau message remplace le précédent plutôt que d'attendre sa disparition.
@@ -316,7 +317,8 @@ private fun PodcastRoute(
         onPlay = viewModel::play,
         onTogglePlay = container.player::togglePlay,
         playbackProgress = container.player.progress,
-        onAddToQueue = viewModel::addToQueue,
+        onToggleQueue = viewModel::toggleQueue,
+        queuedEpisodeIds = remember(playerState.upcoming) { playerState.upcoming.map { it.episodeId }.toSet() },
         onDownload = viewModel::download,
         onRemoveDownload = viewModel::removeDownload,
         onDownloadAll = viewModel::downloadAll,
