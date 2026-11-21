@@ -82,6 +82,7 @@
     <string name="skip_too_long">%1$d secondes au maximum.</string>
     <string name="seconds_suffix">s</string>
     <string name="save">Enregistrer</string>
+    <string name="time_remaining">%1$s restantes</string>
     <string name="played_episodes">Épisodes lus</string>
     <string name="mark_played">Marquer comme lu</string>
     <string name="mark_unplayed">Marquer comme non lu</string>

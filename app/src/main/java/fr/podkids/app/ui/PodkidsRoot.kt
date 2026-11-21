@@ -314,6 +314,8 @@ private fun PodcastRoute(
         onSubscribe = viewModel::subscribe,
         onRemove = viewModel::remove,
         onPlay = viewModel::play,
+        onTogglePlay = container.player::togglePlay,
+        playbackProgress = container.player.progress,
         onAddToQueue = viewModel::addToQueue,
         onDownload = viewModel::download,
         onRemoveDownload = viewModel::removeDownload,

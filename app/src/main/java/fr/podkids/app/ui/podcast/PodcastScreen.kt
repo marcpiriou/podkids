@@ -30,8 +30,6 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.DownloadDone
 import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material.icons.rounded.GraphicEq
-import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.AlertDialog
@@ -69,6 +67,9 @@ import fr.podkids.app.data.db.DownloadState
 import fr.podkids.app.data.db.EpisodeEntity
 import fr.podkids.app.data.db.PodcastEntity
 import fr.podkids.app.data.settings.EpisodeOrder
+import fr.podkids.app.playback.PlaybackProgress
+import kotlinx.coroutines.flow.StateFlow
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fr.podkids.app.ui.components.Artwork
 import fr.podkids.app.ui.components.formatDate
 import fr.podkids.app.ui.components.formatDuration
@@ -100,6 +101,10 @@ fun PodcastScreen(
     onSubscribe: () -> Unit,
     onRemove: () -> Unit,
     onPlay: (Long) -> Unit,
+    /** Lecture / pause de l'épisode en cours. */
+    onTogglePlay: () -> Unit,
+    /** Avancement en direct de l'épisode en cours de lecture. */
+    playbackProgress: StateFlow<PlaybackProgress>,
     onAddToQueue: (Long) -> Unit,
     onDownload: (Long) -> Unit,
     onRemoveDownload: (Long) -> Unit,
@@ -212,7 +217,11 @@ fun PodcastScreen(
                             episode = episode,
                             isCurrent = episode.id == currentEpisodeId,
                             isPlaying = isPlaying && episode.id == currentEpisodeId,
-                            onPlay = { onPlay(episode.id) },
+                            onPlay = {
+                                // L'épisode en cours se met en pause / reprend ; un autre démarre.
+                                if (episode.id == currentEpisodeId) onTogglePlay() else onPlay(episode.id)
+                            },
+                            playbackProgress = playbackProgress,
                             onAddToQueue = { onAddToQueue(episode.id) },
                             onDownload = { onDownload(episode.id) },
                             onCancelDownload = { onRemoveDownload(episode.id) },
@@ -412,26 +421,39 @@ private fun EpisodeRow(
     isCurrent: Boolean,
     isPlaying: Boolean,
     onPlay: () -> Unit,
+    playbackProgress: StateFlow<PlaybackProgress>,
     onAddToQueue: () -> Unit,
     onDownload: () -> Unit,
     onCancelDownload: () -> Unit,
     onDeleteDownload: () -> Unit,
     showDownloadButton: Boolean,
 ) {
+    // Seul l'épisode en cours suit l'avancement en direct ; les autres utilisent la position enregistrée.
+    val live = if (isCurrent) playbackProgress.collectAsStateWithLifecycle().value else null
+    val durationMs = live?.durationMs?.takeIf { it > 0 } ?: ((episode.durationSec ?: 0L) * 1000)
+    val positionMs = live?.positionMs ?: episode.positionMs
+    val completed = episode.completed && !isCurrent
+    val fraction = episodeFraction(positionMs, durationMs, completed)
+    val inProgress = !completed && positionMs > 0
+    val remainingSec = if (inProgress && durationMs > 0) (durationMs - positionMs).coerceAtLeast(0) / 1000 else null
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClickLabel = stringResource(R.string.play), onClick = onPlay)
-            .padding(start = 16.dp, end = 4.dp, top = 10.dp, bottom = 10.dp),
+            .clickable(
+                onClickLabel = stringResource(if (isPlaying) R.string.pause else R.string.play),
+                onClick = onPlay,
+            )
+            .padding(start = 10.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
     ) {
-        Icon(
-            imageVector = if (isPlaying) Icons.Rounded.GraphicEq else Icons.Rounded.PlayArrow,
-            contentDescription = null,
-            tint = if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(32.dp),
+        EpisodePlayButton(
+            fraction = fraction ?: 0f,
+            isPlaying = isPlaying,
+            highlighted = isCurrent,
+            onClick = onPlay,
         )
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = episode.title,
@@ -446,8 +468,12 @@ private fun EpisodeRow(
             )
             val details = listOfNotNull(
                 episode.publishedAt?.let(::formatDate),
-                episode.durationSec?.let(::formatDuration),
-                if (episode.completed) stringResource(R.string.episode_listened) else null,
+                when {
+                    // Épisode commencé : temps restant, comme sur l'anneau.
+                    remainingSec != null -> stringResource(R.string.time_remaining, formatDuration(remainingSec))
+                    else -> episode.durationSec?.let(::formatDuration)
+                },
+                if (completed) stringResource(R.string.episode_listened) else null,
             ).joinToString(" · ")
             if (details.isNotEmpty()) {
                 Text(
