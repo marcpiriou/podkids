@@ -122,6 +122,10 @@ abstract class EpisodeDao {
     @Query("UPDATE episodes SET positionMs = 0, completed = 1 WHERE id = :id")
     abstract suspend fun markCompleted(id: Long)
 
+    /** Remet un épisode « non lu » : il sera repris depuis le début. */
+    @Query("UPDATE episodes SET positionMs = 0, completed = 0 WHERE id = :id")
+    abstract suspend fun markUnplayed(id: Long)
+
     @Query("UPDATE episodes SET downloadState = :state, downloadProgress = :progress WHERE id = :id")
     abstract suspend fun setDownloadState(id: Long, state: DownloadState, progress: Int)
 

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Download
@@ -80,6 +82,9 @@ fun PodcastScreen(
      * actions de gestion (ajout, retrait, téléchargements) sont masquées.
      */
     downloadedOnly: Boolean,
+    /** Glisser un épisode le marque lu / non lu. */
+    swipeEnabled: Boolean,
+    onTogglePlayed: (episodeId: Long, played: Boolean) -> Unit,
     refreshing: Boolean,
     order: EpisodeOrder,
     onToggleOrder: () -> Unit,
@@ -184,22 +189,62 @@ fun PodcastScreen(
                     )
                 }
             }
-            items(episodes, key = { it.id }) { episode ->
-                EpisodeRow(
-                    episode = episode,
-                    isCurrent = episode.id == currentEpisodeId,
-                    isPlaying = isPlaying && episode.id == currentEpisodeId,
-                    onPlay = { onPlay(episode.id) },
-                    onAddToQueue = { onAddToQueue(episode.id) },
-                    onDownload = { onDownload(episode.id) },
-                    onCancelDownload = { onRemoveDownload(episode.id) },
-                    onDeleteDownload = { confirmDeleteDownload = episode.id },
-                    showDownloadButton = !downloadedOnly,
-                )
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
+            // Épisodes à écouter, puis section « Épisodes lus » en bas de la liste.
+            val (played, toListen) = episodes.partition { it.completed }
+            val episodeItem: @Composable LazyItemScope.(EpisodeEntity) -> Unit = { episode ->
+                Column(modifier = Modifier.animateItem()) {
+                    SwipeToTogglePlayed(
+                        enabled = swipeEnabled,
+                        played = episode.completed,
+                        onToggle = { onTogglePlayed(episode.id, !episode.completed) },
+                    ) {
+                        EpisodeRow(
+                            episode = episode,
+                            isCurrent = episode.id == currentEpisodeId,
+                            isPlaying = isPlaying && episode.id == currentEpisodeId,
+                            onPlay = { onPlay(episode.id) },
+                            onAddToQueue = { onAddToQueue(episode.id) },
+                            onDownload = { onDownload(episode.id) },
+                            onCancelDownload = { onRemoveDownload(episode.id) },
+                            onDeleteDownload = { confirmDeleteDownload = episode.id },
+                            showDownloadButton = !downloadedOnly,
+                        )
+                    }
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
+            }
+            items(toListen, key = { it.id }) { episodeItem(it) }
+            if (played.isNotEmpty()) {
+                item(key = "played-header") {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .animateItem()
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 4.dp),
+                    ) {
+                        Icon(
+                            Icons.Rounded.CheckCircle,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.played_episodes),
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Text(
+                            text = played.size.toString(),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+                items(played, key = { it.id }) { episodeItem(it) }
             }
         }
     }

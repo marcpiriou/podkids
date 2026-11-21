@@ -201,6 +201,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     playerState = playerState,
                     defaultEpisodeOrder = settings.episodeOrder,
                     downloadedOnly = settings.onlyDownloaded,
+                    swipeEnabled = settings.swipeEnabled,
                     onBack = { navController.popBackStack() },
                 )
             }
@@ -236,6 +237,7 @@ fun PodkidsRoot(container: AppContainer, settings: UiSettings, openPlayerRequest
                     onEpisodeOrderChange = { scope.launch { repository.setEpisodeOrder(it) } },
                     onHideCatalogOnHomeChange = { scope.launch { repository.setHideCatalogOnHome(it) } },
                     onDownloadedOnlyChange = { scope.launch { repository.setDownloadedOnly(it) } },
+                    onSwipeToMarkPlayedChange = { scope.launch { repository.setSwipeToMarkPlayed(it) } },
                     onOpenCatalog = { navController.navigate(Routes.CATALOG) },
                     onSetPassword = { scope.launch { repository.setPassword(it) } },
                     onClearPassword = { scope.launch { repository.clearPassword() } },
@@ -252,6 +254,7 @@ private fun PodcastRoute(
     playerState: PlayerUiState,
     defaultEpisodeOrder: EpisodeOrder,
     downloadedOnly: Boolean,
+    swipeEnabled: Boolean,
     onBack: () -> Unit,
 ) {
     val viewModel: PodcastViewModel = viewModel(
@@ -291,6 +294,8 @@ private fun PodcastRoute(
         podcast = podcast,
         episodes = episodes,
         downloadedOnly = downloadedOnly,
+        swipeEnabled = swipeEnabled,
+        onTogglePlayed = viewModel::togglePlayed,
         refreshing = refreshing,
         order = order,
         onToggleOrder = viewModel::toggleOrder,

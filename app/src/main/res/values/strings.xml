@@ -73,6 +73,9 @@
     <string name="already_in_queue">Cet épisode est déjà dans la file d’attente</string>
     <string name="refresh_failed">Impossible d’actualiser ce podcast</string>
     <string name="no_downloaded_episode">Aucun épisode téléchargé pour ce podcast.</string>
+    <string name="played_episodes">Épisodes lus</string>
+    <string name="mark_played">Marquer comme lu</string>
+    <string name="mark_unplayed">Marquer comme non lu</string>
     <string name="episode_listened">Écouté</string>
     <string name="sort_oldest_first">Du plus ancien au plus récent</string>
     <string name="sort_newest_first">Du plus récent au plus ancien</string>
@@ -123,6 +126,8 @@
     <string name="setting_hide_catalog_description">En mode enfant, le catalogue ne s’ouvre plus que depuis ce bouton des réglages.</string>
     <string name="setting_downloaded_only">Épisodes téléchargés uniquement</string>
     <string name="setting_downloaded_only_description">En mode enfant, seuls les épisodes téléchargés sont affichés, sans les boutons de téléchargement ni de suppression.</string>
+    <string name="setting_swipe_played">Glisser pour marquer lu / non lu</string>
+    <string name="setting_swipe_played_description">En mode enfant, autorise le glissement d’un épisode vers la gauche ou la droite pour le marquer comme lu ou non lu. Toujours possible en mode adulte.</string>
     <string name="setting_episode_order">Ordre des épisodes par défaut</string>
     <string name="episode_order_oldest_first">Anciens d’abord</string>
     <string name="episode_order_newest_first">Récents d’abord</string>

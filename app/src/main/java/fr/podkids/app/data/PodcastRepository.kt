@@ -112,6 +112,10 @@ class PodcastRepository(
 
     suspend fun markCompleted(episodeId: Long) = episodeDao.markCompleted(episodeId)
 
+    /** Marque un épisode comme lu ou non lu (non lu : reprise depuis le début). */
+    suspend fun setPlayed(episodeId: Long, played: Boolean) =
+        if (played) episodeDao.markCompleted(episodeId) else episodeDao.markUnplayed(episodeId)
+
     /** Liste de lecture enregistrée et index de l'épisode en cours dans cette liste. */
     suspend fun loadQueue(): Pair<List<EpisodeWithPodcast>, Int> = queueDao.loadWithCurrentIndex()
 

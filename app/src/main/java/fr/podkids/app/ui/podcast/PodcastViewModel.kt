@@ -78,6 +78,10 @@ class PodcastViewModel(
         }
     }
 
+    fun togglePlayed(episodeId: Long, played: Boolean) {
+        viewModelScope.launch { repository.setPlayed(episodeId, played) }
+    }
+
     fun subscribe() {
         viewModelScope.launch { repository.subscribe(podcastId) }
     }

@@ -9,6 +9,9 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
   de 3 à 12 ans), une recherche, et l'ajout d'un podcast à partir de l'adresse de son flux RSS.
 - **Écoute** : un appui sur un épisode le lit en streaming ; la lecture continue en arrière-plan avec
   notification et commandes sur l'écran verrouillé.
+- **Épisodes lus** : un épisode écouté jusqu'au bout est marqué comme lu et rangé en bas de la liste, dans
+  une section « Épisodes lus ». Glisser un épisode vers la gauche ou la droite le marque lu ou non lu
+  (toujours possible en mode adulte, sur réglage en mode enfant).
 - **Ordre des épisodes** : une icône de tri, sur la page d'un podcast, bascule entre l'ordre chronologique
   (du plus ancien au plus récent, par défaut) et l'ordre inverse. L'ordre par défaut se règle dans les
   réglages.
@@ -25,7 +28,8 @@ Application Android de podcasts pour enfants : simple, colorée, pensée pour ê
 - **Mode enfant / mode adulte** : une icône en haut à droite de l'accueil bascule entre les deux modes. En
   mode enfant, les réglages de la carte « Mode enfant » s'appliquent : masquer le catalogue de l'accueil (il
   ne s'ouvre alors que par un bouton des réglages) et n'afficher que les épisodes téléchargés (sans boutons
-  de téléchargement ni de suppression). En mode adulte, tout est visible.
+  de téléchargement ni de suppression), et autoriser ou non le glissement pour marquer un épisode lu / non
+  lu. En mode adulte, tout est visible.
 - **Verrouillage des réglages** : en mode enfant, un mot de passe défini dans les réglages est demandé pour
   les ouvrir et pour passer en mode adulte.
   Seule une empreinte salée est enregistrée. En cas d'oubli, effacer les données de l'application dans les

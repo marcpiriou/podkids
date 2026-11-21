@@ -26,6 +26,8 @@ data class UiSettings(
     val hideCatalogOnHome: Boolean = false,
     /** Seuls les épisodes téléchargés (et les podcasts qui en ont) sont affichés. */
     val downloadedOnly: Boolean = false,
+    /** En mode enfant, autoriser le glissement d'un épisode pour le marquer lu / non lu. */
+    val swipeToMarkPlayed: Boolean = false,
     /** Un mot de passe protège l'accès aux réglages. */
     val settingsLocked: Boolean = false,
     /** Choix d'âge cochés dans le catalogue ; vide = tous les âges. */
@@ -42,6 +44,9 @@ data class UiSettings(
     /** Seuls les épisodes téléchargés sont effectivement affichés (mode enfant uniquement). */
     val onlyDownloaded: Boolean get() = childMode && downloadedOnly
 
+    /** Glisser un épisode pour le marquer lu / non lu : toujours en mode adulte, sur réglage en mode enfant. */
+    val swipeEnabled: Boolean get() = !childMode || swipeToMarkPlayed
+
     /** Le mot de passe est demandé pour ouvrir les réglages (mode enfant uniquement). */
     val passwordRequired: Boolean get() = childMode && settingsLocked
 }
@@ -56,6 +61,7 @@ class SettingsRepository(private val context: Context) {
             episodeOrder = enumOrDefault(prefs[KEY_EPISODE_ORDER], EpisodeOrder.OLDEST_FIRST),
             hideCatalogOnHome = prefs[KEY_HIDE_CATALOG] ?: false,
             downloadedOnly = prefs[KEY_DOWNLOADED_ONLY] ?: false,
+            swipeToMarkPlayed = prefs[KEY_SWIPE_TO_MARK_PLAYED] ?: false,
             settingsLocked = !prefs[KEY_PASSWORD_HASH].isNullOrEmpty(),
             childMode = prefs[KEY_CHILD_MODE] ?: true,
             catalogAges = prefs[KEY_CATALOG_AGES].orEmpty()
@@ -69,6 +75,7 @@ class SettingsRepository(private val context: Context) {
     suspend fun setEpisodeOrder(value: EpisodeOrder) = set(KEY_EPISODE_ORDER, value.name)
     suspend fun setHideCatalogOnHome(value: Boolean) = context.settingsDataStore.edit { it[KEY_HIDE_CATALOG] = value }
     suspend fun setDownloadedOnly(value: Boolean) = context.settingsDataStore.edit { it[KEY_DOWNLOADED_ONLY] = value }
+    suspend fun setSwipeToMarkPlayed(value: Boolean) = context.settingsDataStore.edit { it[KEY_SWIPE_TO_MARK_PLAYED] = value }
     suspend fun setChildMode(value: Boolean) = context.settingsDataStore.edit { it[KEY_CHILD_MODE] = value }
 
     /** Définit (ou remplace) le mot de passe des réglages. */
@@ -111,6 +118,7 @@ class SettingsRepository(private val context: Context) {
         val KEY_HIDE_CATALOG = booleanPreferencesKey("hide_catalog_on_home")
         val KEY_DOWNLOADED_ONLY = booleanPreferencesKey("downloaded_only")
         val KEY_CHILD_MODE = booleanPreferencesKey("child_mode")
+        val KEY_SWIPE_TO_MARK_PLAYED = booleanPreferencesKey("swipe_to_mark_played")
         val KEY_PASSWORD_HASH = stringPreferencesKey("settings_password_hash")
         val KEY_PASSWORD_SALT = stringPreferencesKey("settings_password_salt")
         val KEY_CATALOG_AGES = stringPreferencesKey("catalog_ages")

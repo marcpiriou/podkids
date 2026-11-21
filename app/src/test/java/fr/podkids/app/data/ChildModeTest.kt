@@ -37,4 +37,11 @@ class ChildModeTest {
         assertFalse(settings.onlyDownloaded)
         assertFalse(settings.passwordRequired)
     }
+
+    @Test
+    fun `le glissement lu non lu suit le reglage en mode enfant et reste libre en mode adulte`() {
+        assertFalse(UiSettings(childMode = true).swipeEnabled)
+        assertTrue(UiSettings(childMode = true, swipeToMarkPlayed = true).swipeEnabled)
+        assertTrue(UiSettings(childMode = false).swipeEnabled)
+    }
 }

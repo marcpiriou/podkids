@@ -66,6 +66,7 @@ fun SettingsScreen(
     onEpisodeOrderChange: (EpisodeOrder) -> Unit,
     onHideCatalogOnHomeChange: (Boolean) -> Unit,
     onDownloadedOnlyChange: (Boolean) -> Unit,
+    onSwipeToMarkPlayedChange: (Boolean) -> Unit,
     onOpenCatalog: () -> Unit,
     onSetPassword: (String) -> Unit,
     onClearPassword: () -> Unit,
@@ -155,6 +156,13 @@ fun SettingsScreen(
                     description = stringResource(R.string.setting_downloaded_only_description),
                     checked = settings.downloadedOnly,
                     onCheckedChange = onDownloadedOnlyChange,
+                )
+                Spacer(Modifier.height(12.dp))
+                SwitchRow(
+                    title = stringResource(R.string.setting_swipe_played),
+                    description = stringResource(R.string.setting_swipe_played_description),
+                    checked = settings.swipeToMarkPlayed,
+                    onCheckedChange = onSwipeToMarkPlayedChange,
                 )
             }
 
