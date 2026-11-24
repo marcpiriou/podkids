@@ -99,6 +99,7 @@
     <string name="open_player">Ouvrir le lecteur</string>
     <string name="playback_error">Impossible de lire cet épisode. Vérifie la connexion Internet.</string>
     <string name="queue">File d’attente</string>
+    <string name="queue_duration_at_least">plus de %1$s</string>
     <string name="queue_clear">Vider</string>
     <string name="queue_empty">La file d’attente est vide. Ajoute des épisodes pour les écouter à la suite.</string>
     <string name="queue_move_up">Monter dans la file d’attente</string>

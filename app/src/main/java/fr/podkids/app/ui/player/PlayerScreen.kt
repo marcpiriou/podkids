@@ -54,6 +54,8 @@ import fr.podkids.app.R
 import fr.podkids.app.playback.PlaybackProgress
 import fr.podkids.app.playback.PlayerUiState
 import fr.podkids.app.playback.QueueEntry
+import fr.podkids.app.playback.totalDuration
+import fr.podkids.app.ui.components.formatDuration
 import fr.podkids.app.ui.components.Artwork
 import fr.podkids.app.ui.components.formatClock
 import kotlinx.coroutines.flow.StateFlow
@@ -119,8 +121,21 @@ fun PlayerScreen(
                     Text(
                         text = stringResource(R.string.queue),
                         style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.weight(1f),
                     )
+                    // Durée totale de la file, en petit à côté du titre.
+                    val duration = remember(state.upcoming) { state.upcoming.totalDuration() }
+                    if (duration.totalMs > 0) {
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = formatDuration(duration.totalMs / 1000).let {
+                                if (duration.complete) it else stringResource(R.string.queue_duration_at_least, it)
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                        )
+                    }
+                    Spacer(Modifier.weight(1f))
                     if (state.upcoming.isNotEmpty()) {
                         TextButton(onClick = onClearUpcoming) { Text(stringResource(R.string.queue_clear)) }
                     }

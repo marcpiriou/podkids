@@ -30,7 +30,15 @@ data class QueueEntry(
     val title: String,
     val podcastTitle: String,
     val artworkUrl: String?,
+    /** Temps restant à écouter ; null si la durée est inconnue. */
+    val remainingMs: Long? = null,
 )
+
+/** Durée totale d'une liste d'épisodes ; [complete] est faux si certaines durées sont inconnues. */
+data class QueueDuration(val totalMs: Long, val complete: Boolean)
+
+fun List<QueueEntry>.totalDuration(): QueueDuration =
+    QueueDuration(totalMs = sumOf { it.remainingMs ?: 0L }, complete = all { it.remainingMs != null })
 
 data class PlayerUiState(
     val connected: Boolean = false,
@@ -264,6 +272,7 @@ class PlayerConnection(private val context: Context) {
         title = mediaMetadata.title?.toString().orEmpty(),
         podcastTitle = mediaMetadata.artist?.toString().orEmpty(),
         artworkUrl = mediaMetadata.artworkUri?.toString(),
+        remainingMs = remainingMs,
     )
 
     private companion object {
